@@ -155,14 +155,16 @@ class CustomEvaluator(BaseEvaluator):
                         f"Expected one of {', '.join(self._ID_FIELDS)}"
                     )
                 continue
-            if hasattr(item, "id"):
-                ids.append(str(getattr(item, "id")))
-                continue
-
-            raise ValueError(
-                f"Unable to extract id from {label}[{index}] of type "
-                f"{type(item).__name__}"
-            )
+            for field in self._ID_FIELDS:
+                if hasattr(item, field):
+                    ids.append(str(getattr(item, field)))
+                    break
+            else:
+                raise ValueError(
+                    f"Unable to extract id from {label}[{index}] of type "
+                    f"{type(item).__name__}"
+                )
+            continue
 
         return ids
 

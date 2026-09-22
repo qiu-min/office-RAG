@@ -1,5 +1,6 @@
 """Unit tests for CustomEvaluator and EvaluatorFactory."""
 
+from types import SimpleNamespace
 from unittest.mock import MagicMock
 
 import pytest
@@ -162,6 +163,16 @@ class TestCustomEvaluatorBoundary:
         assert metrics["recall@1"] == 0.0
         assert metrics["recall@3"] == 0.5
         assert metrics["mrr"] == pytest.approx(0.5)
+
+    def test_retrieval_result_object_uses_chunk_id(self) -> None:
+        evaluator = CustomEvaluator(metrics=["hit_rate@1", "mrr"])
+        metrics = evaluator.evaluate(
+            "q",
+            [SimpleNamespace(chunk_id="target")],
+            ground_truth=["target"],
+        )
+
+        assert metrics == {"hit_rate@1": 1.0, "mrr": 1.0}
 
     def test_recall_empty_ground_truth_is_zero(self) -> None:
         evaluator = CustomEvaluator(metrics=["recall@5"])

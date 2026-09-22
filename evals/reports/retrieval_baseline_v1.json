@@ -1,0 +1,1440 @@
+{
+  "name": "retrieval_baseline_v1",
+  "version": "1.0",
+  "test_set": "evals/datasets/business_golden_v1.json",
+  "collection": "ubuntu_ops_filtered",
+  "top_k": 10,
+  "ks": [
+    1,
+    3,
+    5,
+    10
+  ],
+  "query_count": 40,
+  "aggregate_metrics": {
+    "hit_rate@1": 0.75,
+    "hit_rate@3": 0.9,
+    "hit_rate@5": 0.925,
+    "hit_rate@10": 0.975,
+    "recall@1": 0.4225,
+    "recall@3": 0.6338,
+    "recall@5": 0.7321,
+    "recall@10": 0.8254,
+    "mrr": 0.8296
+  },
+  "query_results": [
+    {
+      "query": "When I start a Compose project, how do containers find each other?",
+      "case_id": "biz_001",
+      "expected_chunk_ids": [
+        "57d10e59_0001_004baebb"
+      ],
+      "retrieved_chunk_ids": [
+        "57d10e59_0001_004baebb",
+        "57d10e59_0002_89fc1c7c",
+        "57d10e59_0012_3d3bc8b6",
+        "57d10e59_0000_ffc21f05",
+        "57d10e59_0004_a31e574c",
+        "9615636f_0009_b0f6b781",
+        "9615636f_0023_1215d005",
+        "9615636f_0021_f0b0ae0a",
+        "57d10e59_0003_1e3e4660",
+        "9615636f_0008_82d3f452"
+      ],
+      "category": "feature",
+      "difficulty": "easy",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 1.0,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 3082.4
+    },
+    {
+      "query": "Should a Compose service connect to another container by its IP address?",
+      "case_id": "biz_002",
+      "expected_chunk_ids": [
+        "57d10e59_0003_1e3e4660"
+      ],
+      "retrieved_chunk_ids": [
+        "57d10e59_0002_89fc1c7c",
+        "57d10e59_0004_a31e574c",
+        "57d10e59_0003_1e3e4660",
+        "57d10e59_0001_004baebb",
+        "57d10e59_0018_83ed3183",
+        "57d10e59_0012_3d3bc8b6",
+        "57d10e59_0000_ffc21f05",
+        "9615636f_0027_0ac03cbd",
+        "57d10e59_0019_579abac7",
+        "9615636f_0026_e2055289"
+      ],
+      "category": "limitation",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 0.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.0,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.3333
+      },
+      "elapsed_ms": 2827.1
+    },
+    {
+      "query": "What changes when a Compose service uses network_mode: host?",
+      "case_id": "biz_003",
+      "expected_chunk_ids": [
+        "57d10e59_0006_833a1873"
+      ],
+      "retrieved_chunk_ids": [
+        "57d10e59_0001_004baebb",
+        "57d10e59_0000_ffc21f05",
+        "57d10e59_0006_833a1873",
+        "57d10e59_0004_a31e574c",
+        "57d10e59_0018_83ed3183",
+        "9615636f_0025_dad74660",
+        "57d10e59_0002_89fc1c7c",
+        "d8bbe4e7_0002_8fde959a",
+        "9615636f_0018_f6daebac",
+        "d8bbe4e7_0000_7c6c1d90"
+      ],
+      "category": "configuration",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 0.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.0,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.3333
+      },
+      "elapsed_ms": 2773.9
+    },
+    {
+      "query": "How can I isolate a Compose network while still letting one service reach the internet?",
+      "case_id": "biz_004",
+      "expected_chunk_ids": [
+        "57d10e59_0010_cf2baea1",
+        "57d10e59_0014_8c240b82"
+      ],
+      "retrieved_chunk_ids": [
+        "57d10e59_0010_cf2baea1",
+        "57d10e59_0008_d335e43f",
+        "57d10e59_0002_89fc1c7c",
+        "57d10e59_0014_8c240b82",
+        "57d10e59_0001_004baebb",
+        "9615636f_0023_1215d005",
+        "57d10e59_0018_83ed3183",
+        "57d10e59_0013_8a636241",
+        "57d10e59_0004_a31e574c",
+        "57d10e59_0019_579abac7"
+      ],
+      "category": "cross_section",
+      "difficulty": "hard",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.5,
+        "recall@3": 0.5,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2733.8
+    },
+    {
+      "query": "What does `docker compose up` do in the Compose quickstart?",
+      "case_id": "biz_005",
+      "expected_chunk_ids": [
+        "9615636f_0009_b0f6b781"
+      ],
+      "retrieved_chunk_ids": [
+        "9615636f_0000_b1f66545",
+        "57d10e59_0002_89fc1c7c",
+        "9615636f_0023_1215d005",
+        "9615636f_0010_83c10dfb",
+        "d8bbe4e7_0002_8fde959a",
+        "9615636f_0020_24906331",
+        "9615636f_0014_8c9134db",
+        "57d10e59_0001_004baebb",
+        "9615636f_0024_7acdaf97",
+        "9615636f_0009_b0f6b781"
+      ],
+      "category": "procedure",
+      "difficulty": "easy",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 0.0,
+        "hit_rate@3": 0.0,
+        "hit_rate@5": 0.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.0,
+        "recall@3": 0.0,
+        "recall@5": 0.0,
+        "recall@10": 1.0,
+        "mrr": 0.1
+      },
+      "elapsed_ms": 2761.3
+    },
+    {
+      "query": "How do I prevent the web service from starting before Redis is ready?",
+      "case_id": "biz_006",
+      "expected_chunk_ids": [
+        "9615636f_0011_a87438b5",
+        "9615636f_0013_4c9dd91f"
+      ],
+      "retrieved_chunk_ids": [
+        "9615636f_0011_a87438b5",
+        "9615636f_0010_83c10dfb",
+        "9615636f_0023_1215d005",
+        "9615636f_0018_f6daebac",
+        "9615636f_0013_4c9dd91f",
+        "9615636f_0009_b0f6b781",
+        "9615636f_0012_5e61e6b5",
+        "9615636f_0022_0ed69b44",
+        "9615636f_0027_0ac03cbd",
+        "9615636f_0000_b1f66545"
+      ],
+      "category": "troubleshooting",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.5,
+        "recall@3": 0.5,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2763.6
+    },
+    {
+      "query": "When does Compose Watch sync files and when does it rebuild the image?",
+      "case_id": "biz_007",
+      "expected_chunk_ids": [
+        "9615636f_0015_d63aeca0",
+        "9615636f_0016_c319599e"
+      ],
+      "retrieved_chunk_ids": [
+        "9615636f_0014_8c9134db",
+        "9615636f_0016_c319599e",
+        "9615636f_0023_1215d005",
+        "9615636f_0018_f6daebac",
+        "d8bbe4e7_0002_8fde959a",
+        "9615636f_0020_24906331",
+        "9615636f_0007_d4dea580",
+        "9615636f_0000_b1f66545",
+        "9615636f_0017_e249750b",
+        "9615636f_0013_4c9dd91f"
+      ],
+      "category": "comparison",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 0.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.0,
+        "recall@3": 0.5,
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "mrr": 0.5
+      },
+      "elapsed_ms": 2787.7
+    },
+    {
+      "query": "Why does the Compose example use a named volume for Redis, and how do I reset it?",
+      "case_id": "biz_008",
+      "expected_chunk_ids": [
+        "9615636f_0018_f6daebac",
+        "9615636f_0020_24906331",
+        "9615636f_0021_f0b0ae0a"
+      ],
+      "retrieved_chunk_ids": [
+        "9615636f_0018_f6daebac",
+        "9615636f_0020_24906331",
+        "9615636f_0023_1215d005",
+        "9615636f_0025_dad74660",
+        "9615636f_0022_0ed69b44",
+        "9615636f_0000_b1f66545",
+        "9615636f_0010_83c10dfb",
+        "d8bbe4e7_0001_1eaa3115",
+        "9615636f_0021_f0b0ae0a",
+        "9615636f_0007_d4dea580"
+      ],
+      "category": "limitation",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.3333,
+        "recall@3": 0.6667,
+        "recall@5": 0.6667,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2750.9
+    },
+    {
+      "query": "Which Ubuntu versions and CPU architectures are listed for Docker Engine installation?",
+      "case_id": "biz_009",
+      "expected_chunk_ids": [
+        "4acb23a5_0001_7f8593c4",
+        "4acb23a5_0002_6d8e8409"
+      ],
+      "retrieved_chunk_ids": [
+        "4acb23a5_0002_6d8e8409",
+        "4acb23a5_0001_7f8593c4",
+        "4acb23a5_0012_311dc882",
+        "4acb23a5_0000_4fd1ea5e",
+        "4acb23a5_0011_c9e2bb34",
+        "4acb23a5_0005_7bfc3174",
+        "4acb23a5_0010_b8067e9c",
+        "4acb23a5_0004_0bc888fc",
+        "4acb23a5_0020_05305b66",
+        "4acb23a5_0015_50888227"
+      ],
+      "category": "limitation",
+      "difficulty": "easy",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.5,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2639.5
+    },
+    {
+      "query": "What firewall caveat should I check before exposing Docker container ports?",
+      "case_id": "biz_010",
+      "expected_chunk_ids": [
+        "4acb23a5_0001_7f8593c4"
+      ],
+      "retrieved_chunk_ids": [
+        "4acb23a5_0001_7f8593c4",
+        "9615636f_0013_4c9dd91f",
+        "4acb23a5_0020_05305b66",
+        "57d10e59_0021_2902a016",
+        "57d10e59_0022_db1ad997",
+        "f4661936_0008_cea79a95",
+        "57d10e59_0020_9504919d",
+        "4acb23a5_0003_7038038b",
+        "4acb23a5_0017_899f2a71",
+        "9615636f_0014_8c9134db"
+      ],
+      "category": "limitation",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 1.0,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2688.7
+    },
+    {
+      "query": "What is the documented flow for installing Docker Engine from Docker's apt repository?",
+      "case_id": "biz_011",
+      "expected_chunk_ids": [
+        "4acb23a5_0005_7bfc3174",
+        "4acb23a5_0006_106680e0",
+        "4acb23a5_0009_ae291496",
+        "4acb23a5_0010_b8067e9c"
+      ],
+      "retrieved_chunk_ids": [
+        "4acb23a5_0005_7bfc3174",
+        "4acb23a5_0000_4fd1ea5e",
+        "4acb23a5_0011_c9e2bb34",
+        "4acb23a5_0004_0bc888fc",
+        "4acb23a5_0016_c42be69e",
+        "4acb23a5_0019_5e7c2a0c",
+        "4acb23a5_0020_05305b66",
+        "4acb23a5_0003_7038038b",
+        "4acb23a5_0002_6d8e8409",
+        "4acb23a5_0015_50888227"
+      ],
+      "category": "cross_section",
+      "difficulty": "hard",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.25,
+        "recall@3": 0.25,
+        "recall@5": 0.25,
+        "recall@10": 0.25,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2772.4
+    },
+    {
+      "query": "Is Docker's convenience install script recommended for production?",
+      "case_id": "biz_012",
+      "expected_chunk_ids": [
+        "4acb23a5_0016_c42be69e",
+        "4acb23a5_0017_899f2a71"
+      ],
+      "retrieved_chunk_ids": [
+        "4acb23a5_0016_c42be69e",
+        "4acb23a5_0017_899f2a71",
+        "4acb23a5_0015_50888227",
+        "4acb23a5_0019_5e7c2a0c",
+        "4acb23a5_0000_4fd1ea5e",
+        "4acb23a5_0020_05305b66",
+        "4acb23a5_0004_0bc888fc",
+        "4acb23a5_0018_b0cdf38b",
+        "4acb23a5_0011_c9e2bb34",
+        "4acb23a5_0002_6d8e8409"
+      ],
+      "category": "limitation",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.5,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2790.7
+    },
+    {
+      "query": "What production-specific changes might I make to a Compose configuration?",
+      "case_id": "biz_013",
+      "expected_chunk_ids": [
+        "d8bbe4e7_0000_7c6c1d90",
+        "d8bbe4e7_0001_1eaa3115"
+      ],
+      "retrieved_chunk_ids": [
+        "d8bbe4e7_0000_7c6c1d90",
+        "d8bbe4e7_0001_1eaa3115",
+        "d8bbe4e7_0002_8fde959a",
+        "9615636f_0007_d4dea580",
+        "57d10e59_0002_89fc1c7c",
+        "9615636f_0008_82d3f452",
+        "57d10e59_0001_004baebb",
+        "9615636f_0025_dad74660",
+        "9615636f_0024_7acdaf97",
+        "9615636f_0010_83c10dfb"
+      ],
+      "category": "configuration",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.5,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2741.6
+    },
+    {
+      "query": "How can I redeploy only the Compose service named web?",
+      "case_id": "biz_014",
+      "expected_chunk_ids": [
+        "d8bbe4e7_0002_8fde959a"
+      ],
+      "retrieved_chunk_ids": [
+        "d8bbe4e7_0002_8fde959a",
+        "9615636f_0023_1215d005",
+        "57d10e59_0002_89fc1c7c",
+        "9615636f_0018_f6daebac",
+        "9615636f_0027_0ac03cbd",
+        "9615636f_0009_b0f6b781",
+        "57d10e59_0001_004baebb",
+        "57d10e59_0008_d335e43f",
+        "57d10e59_0004_a31e574c",
+        "9615636f_0000_b1f66545"
+      ],
+      "category": "procedure",
+      "difficulty": "easy",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 1.0,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2728.5
+    },
+    {
+      "query": "Which directives are needed in a basic NGINX HTTPS server block?",
+      "case_id": "biz_015",
+      "expected_chunk_ids": [
+        "e80edc3b_0000_e0b0b7f5",
+        "e80edc3b_0001_f5724b85"
+      ],
+      "retrieved_chunk_ids": [
+        "cfc18307_0042_2f8ca40c",
+        "cfc18307_0045_92ef1579",
+        "cfc18307_0024_07cc561d",
+        "cfc18307_0017_f148bbf5",
+        "cfc18307_0015_99160481",
+        "e80edc3b_0000_e0b0b7f5",
+        "cfc18307_0016_3f7c3666",
+        "cfc18307_0034_fa098507",
+        "cfc18307_0032_1576965b",
+        "cfc18307_0044_304dda2d"
+      ],
+      "category": "configuration",
+      "difficulty": "easy",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 0.0,
+        "hit_rate@3": 0.0,
+        "hit_rate@5": 0.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.0,
+        "recall@3": 0.0,
+        "recall@5": 0.0,
+        "recall@10": 0.5,
+        "mrr": 0.1667
+      },
+      "elapsed_ms": 2746.7
+    },
+    {
+      "query": "How should NGINX's private key file be protected?",
+      "case_id": "biz_016",
+      "expected_chunk_ids": [
+        "e80edc3b_0002_53fae882",
+        "e80edc3b_0003_27dc7515"
+      ],
+      "retrieved_chunk_ids": [
+        "e80edc3b_0000_e0b0b7f5",
+        "e80edc3b_0002_53fae882",
+        "e80edc3b_0012_ffcb23ba",
+        "e80edc3b_0013_7118b4a6",
+        "e80edc3b_0001_f5724b85",
+        "cfc18307_0008_e171a854",
+        "e80edc3b_0037_57350b2d",
+        "cfc18307_0002_ab27f1ad",
+        "cfc18307_0007_1a5555ca",
+        "cfc18307_0015_99160481"
+      ],
+      "category": "limitation",
+      "difficulty": "easy",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 0.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.0,
+        "recall@3": 0.5,
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "mrr": 0.5
+      },
+      "elapsed_ms": 2724.1
+    },
+    {
+      "query": "Do I need to explicitly set ssl_protocols and ssl_ciphers in modern NGINX?",
+      "case_id": "biz_017",
+      "expected_chunk_ids": [
+        "e80edc3b_0003_27dc7515",
+        "e80edc3b_0004_c0f6d988"
+      ],
+      "retrieved_chunk_ids": [
+        "e80edc3b_0041_1faf84a6",
+        "e80edc3b_0004_c0f6d988",
+        "e80edc3b_0002_53fae882",
+        "e80edc3b_0000_e0b0b7f5",
+        "e80edc3b_0003_27dc7515",
+        "e80edc3b_0042_c0289fb2",
+        "e80edc3b_0008_92d765bf",
+        "e80edc3b_0040_36c9989d",
+        "e80edc3b_0012_ffcb23ba",
+        "e80edc3b_0029_54a27f98"
+      ],
+      "category": "configuration",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 0.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.0,
+        "recall@3": 0.5,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 0.5
+      },
+      "elapsed_ms": 2841.5
+    },
+    {
+      "query": "How can I reduce the cost of repeated SSL handshakes in NGINX?",
+      "case_id": "biz_018",
+      "expected_chunk_ids": [
+        "e80edc3b_0005_69b30b57",
+        "e80edc3b_0006_1ee6fff2",
+        "e80edc3b_0007_b348ea5e"
+      ],
+      "retrieved_chunk_ids": [
+        "e80edc3b_0005_69b30b57",
+        "e80edc3b_0013_7118b4a6",
+        "e80edc3b_0012_ffcb23ba",
+        "e80edc3b_0039_08619ecb",
+        "e80edc3b_0000_e0b0b7f5",
+        "e80edc3b_0035_8bf63cb2",
+        "cfc18307_0042_2f8ca40c",
+        "cfc18307_0000_cda543c4",
+        "e80edc3b_0037_57350b2d",
+        "e80edc3b_0032_29760808"
+      ],
+      "category": "feature",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.3333,
+        "recall@3": 0.3333,
+        "recall@5": 0.3333,
+        "recall@10": 0.3333,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2685.8
+    },
+    {
+      "query": "Why can NGINX fail when an SSL certificate chain is concatenated in the wrong order?",
+      "case_id": "biz_019",
+      "expected_chunk_ids": [
+        "e80edc3b_0008_92d765bf",
+        "e80edc3b_0009_e48e92e1",
+        "e80edc3b_0010_670ed050",
+        "e80edc3b_0012_ffcb23ba",
+        "e80edc3b_0013_7118b4a6"
+      ],
+      "retrieved_chunk_ids": [
+        "e80edc3b_0012_ffcb23ba",
+        "e80edc3b_0013_7118b4a6",
+        "e80edc3b_0000_e0b0b7f5",
+        "e80edc3b_0009_e48e92e1",
+        "e80edc3b_0029_54a27f98",
+        "e80edc3b_0008_92d765bf",
+        "e80edc3b_0003_27dc7515",
+        "e80edc3b_0037_57350b2d",
+        "e80edc3b_0032_29760808",
+        "e80edc3b_0025_381c1f71"
+      ],
+      "category": "cross_section",
+      "difficulty": "hard",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.2,
+        "recall@3": 0.4,
+        "recall@5": 0.6,
+        "recall@10": 0.8,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2746.4
+    },
+    {
+      "query": "How does SNI let NGINX serve multiple HTTPS sites from one IP?",
+      "case_id": "biz_020",
+      "expected_chunk_ids": [
+        "e80edc3b_0035_8bf63cb2",
+        "e80edc3b_0036_15bf8964",
+        "e80edc3b_0037_57350b2d",
+        "e80edc3b_0039_08619ecb"
+      ],
+      "retrieved_chunk_ids": [
+        "e80edc3b_0037_57350b2d",
+        "e80edc3b_0035_8bf63cb2",
+        "cfc18307_0032_1576965b",
+        "e80edc3b_0032_29760808",
+        "cfc18307_0042_2f8ca40c",
+        "e80edc3b_0036_15bf8964",
+        "e80edc3b_0000_e0b0b7f5",
+        "cfc18307_0002_ab27f1ad",
+        "e80edc3b_0024_45f268ab",
+        "e80edc3b_0039_08619ecb"
+      ],
+      "category": "concept",
+      "difficulty": "hard",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.25,
+        "recall@3": 0.5,
+        "recall@5": 0.5,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2674.5
+    },
+    {
+      "query": "How are NGINX configuration contexts nested?",
+      "case_id": "biz_021",
+      "expected_chunk_ids": [
+        "cfc18307_0017_f148bbf5"
+      ],
+      "retrieved_chunk_ids": [
+        "cfc18307_0008_e171a854",
+        "cfc18307_0002_ab27f1ad",
+        "cfc18307_0032_1576965b",
+        "cfc18307_0007_1a5555ca",
+        "cfc18307_0045_92ef1579",
+        "cfc18307_0030_6b749d37",
+        "cfc18307_0042_2f8ca40c",
+        "cfc18307_0000_cda543c4",
+        "cfc18307_0010_297fab02",
+        "cfc18307_0015_99160481"
+      ],
+      "category": "concept",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 0.0,
+        "hit_rate@3": 0.0,
+        "hit_rate@5": 0.0,
+        "hit_rate@10": 0.0,
+        "recall@1": 0.0,
+        "recall@3": 0.0,
+        "recall@5": 0.0,
+        "recall@10": 0.0,
+        "mrr": 0.0
+      },
+      "elapsed_ms": 4898.6
+    },
+    {
+      "query": "How do I configure NGINX to serve normal files from /data/www and images from /data/images?",
+      "case_id": "biz_022",
+      "expected_chunk_ids": [
+        "cfc18307_0023_3b3cd2cf",
+        "cfc18307_0024_07cc561d",
+        "cfc18307_0025_f3342298",
+        "cfc18307_0028_dd1271c5",
+        "cfc18307_0029_2887e0a0"
+      ],
+      "retrieved_chunk_ids": [
+        "cfc18307_0029_2887e0a0",
+        "cfc18307_0032_1576965b",
+        "cfc18307_0002_ab27f1ad",
+        "cfc18307_0030_6b749d37",
+        "cfc18307_0025_f3342298",
+        "cfc18307_0024_07cc561d",
+        "cfc18307_0042_2f8ca40c",
+        "cfc18307_0000_cda543c4",
+        "cfc18307_0044_304dda2d",
+        "cfc18307_0018_1602932c"
+      ],
+      "category": "procedure",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.2,
+        "recall@3": 0.2,
+        "recall@5": 0.4,
+        "recall@10": 0.6,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2766.5
+    },
+    {
+      "query": "When multiple NGINX location blocks match a request, which one is selected?",
+      "case_id": "biz_023",
+      "expected_chunk_ids": [
+        "cfc18307_0024_07cc561d",
+        "cfc18307_0025_f3342298",
+        "cfc18307_0042_2f8ca40c"
+      ],
+      "retrieved_chunk_ids": [
+        "cfc18307_0025_f3342298",
+        "cfc18307_0042_2f8ca40c",
+        "cfc18307_0024_07cc561d",
+        "cfc18307_0026_825ebde5",
+        "cfc18307_0038_5d791451",
+        "cfc18307_0032_1576965b",
+        "cfc18307_0039_07327e9e",
+        "cfc18307_0030_6b749d37",
+        "e80edc3b_0037_57350b2d",
+        "cfc18307_0034_fa098507"
+      ],
+      "category": "concept",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.3333,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2743.8
+    },
+    {
+      "query": "What should I do after changing an NGINX configuration, and where do I look if it fails?",
+      "case_id": "biz_024",
+      "expected_chunk_ids": [
+        "cfc18307_0030_6b749d37",
+        "cfc18307_0031_457bbbaa"
+      ],
+      "retrieved_chunk_ids": [
+        "cfc18307_0010_297fab02",
+        "cfc18307_0030_6b749d37",
+        "cfc18307_0002_ab27f1ad",
+        "cfc18307_0008_e171a854",
+        "cfc18307_0042_2f8ca40c",
+        "cfc18307_0007_1a5555ca",
+        "cfc18307_0031_457bbbaa",
+        "e80edc3b_0037_57350b2d",
+        "cfc18307_0012_b4b52d0a",
+        "cfc18307_0006_39e365b0"
+      ],
+      "category": "troubleshooting",
+      "difficulty": "easy",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 0.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.0,
+        "recall@3": 0.5,
+        "recall@5": 0.5,
+        "recall@10": 1.0,
+        "mrr": 0.5
+      },
+      "elapsed_ms": 2716.5
+    },
+    {
+      "query": "How does the NGINX simple proxy example forward non-image requests?",
+      "case_id": "biz_025",
+      "expected_chunk_ids": [
+        "cfc18307_0032_1576965b",
+        "cfc18307_0036_b2fae41e",
+        "cfc18307_0037_fada72d9"
+      ],
+      "retrieved_chunk_ids": [
+        "cfc18307_0032_1576965b",
+        "cfc18307_0029_2887e0a0",
+        "cfc18307_0031_457bbbaa",
+        "cfc18307_0042_2f8ca40c",
+        "cfc18307_0045_92ef1579",
+        "cfc18307_0001_d6978fbe",
+        "cfc18307_0012_b4b52d0a",
+        "cfc18307_0025_f3342298",
+        "cfc18307_0000_cda543c4",
+        "cfc18307_0002_ab27f1ad"
+      ],
+      "category": "procedure",
+      "difficulty": "hard",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.3333,
+        "recall@3": 0.3333,
+        "recall@5": 0.3333,
+        "recall@10": 0.3333,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2753.9
+    },
+    {
+      "query": "How can an NGINX proxy serve image files locally while forwarding other requests?",
+      "case_id": "biz_026",
+      "expected_chunk_ids": [
+        "cfc18307_0039_07327e9e",
+        "cfc18307_0040_d5aded3b",
+        "cfc18307_0042_2f8ca40c",
+        "cfc18307_0043_d6633e28",
+        "cfc18307_0044_304dda2d"
+      ],
+      "retrieved_chunk_ids": [
+        "cfc18307_0032_1576965b",
+        "cfc18307_0029_2887e0a0",
+        "cfc18307_0025_f3342298",
+        "cfc18307_0042_2f8ca40c",
+        "cfc18307_0031_457bbbaa",
+        "cfc18307_0045_92ef1579",
+        "cfc18307_0012_b4b52d0a",
+        "cfc18307_0001_d6978fbe",
+        "cfc18307_0000_cda543c4",
+        "cfc18307_0002_ab27f1ad"
+      ],
+      "category": "cross_section",
+      "difficulty": "hard",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 0.0,
+        "hit_rate@3": 0.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.0,
+        "recall@3": 0.0,
+        "recall@5": 0.2,
+        "recall@10": 0.2,
+        "mrr": 0.25
+      },
+      "elapsed_ms": 2728.0
+    },
+    {
+      "query": "Is ufw enabled by default on Ubuntu, and how do I turn it on or off?",
+      "case_id": "biz_027",
+      "expected_chunk_ids": [
+        "f4661936_0001_af62613c"
+      ],
+      "retrieved_chunk_ids": [
+        "f4661936_0001_af62613c",
+        "f4661936_0016_c5db90d7",
+        "f4661936_0014_0084b050",
+        "f4661936_0020_ac37203f",
+        "f4661936_0015_fdc47e8b",
+        "f4661936_0006_8fabbfc1",
+        "f4661936_0004_e15cd5b8",
+        "f4661936_0009_f2de00ed",
+        "4acb23a5_0001_7f8593c4",
+        "f4661936_0005_b0639033"
+      ],
+      "category": "configuration",
+      "difficulty": "easy",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 1.0,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2675.7
+    },
+    {
+      "query": "How do I open or remove a numbered ufw rule?",
+      "case_id": "biz_028",
+      "expected_chunk_ids": [
+        "f4661936_0001_af62613c",
+        "f4661936_0002_64210cb6"
+      ],
+      "retrieved_chunk_ids": [
+        "f4661936_0002_64210cb6",
+        "f4661936_0003_01ff1e80",
+        "f4661936_0016_c5db90d7",
+        "f4661936_0001_af62613c",
+        "f4661936_0014_0084b050",
+        "f4661936_0008_cea79a95",
+        "f4661936_0004_e15cd5b8",
+        "f4661936_0015_fdc47e8b",
+        "f4661936_0020_ac37203f",
+        "f4661936_0009_f2de00ed"
+      ],
+      "category": "procedure",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.5,
+        "recall@3": 0.5,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2668.5
+    },
+    {
+      "query": "How can I allow SSH only from a specific host or subnet and preview the rule first?",
+      "case_id": "biz_029",
+      "expected_chunk_ids": [
+        "f4661936_0003_01ff1e80",
+        "f4661936_0004_e15cd5b8"
+      ],
+      "retrieved_chunk_ids": [
+        "f4661936_0003_01ff1e80",
+        "771189d9_0021_3b6d6b84",
+        "771189d9_0020_089424b7",
+        "57d10e59_0014_8c240b82",
+        "f4661936_0016_c5db90d7",
+        "f4661936_0019_1e5599e8",
+        "f4661936_0008_cea79a95",
+        "4acb23a5_0017_899f2a71",
+        "e80edc3b_0030_8f897c4d",
+        "f4661936_0018_1ce6546c"
+      ],
+      "category": "configuration",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.5,
+        "recall@3": 0.5,
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2710.0
+    },
+    {
+      "query": "Why might a firewall rule not produce logs, and where should the logging rule go?",
+      "case_id": "biz_030",
+      "expected_chunk_ids": [
+        "f4661936_0020_ac37203f",
+        "f4661936_0021_3d1eb27e"
+      ],
+      "retrieved_chunk_ids": [
+        "f4661936_0020_ac37203f",
+        "f4661936_0019_1e5599e8",
+        "f4661936_0022_873abbde",
+        "f4661936_0021_3d1eb27e",
+        "4acb23a5_0001_7f8593c4",
+        "cfc18307_0031_457bbbaa",
+        "f4661936_0018_1ce6546c",
+        "f4661936_0000_cb15201b",
+        "f4661936_0001_af62613c",
+        "f4661936_0008_cea79a95"
+      ],
+      "category": "troubleshooting",
+      "difficulty": "hard",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.5,
+        "recall@3": 0.5,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2768.0
+    },
+    {
+      "query": "What package-management tasks does Ubuntu's apt command support?",
+      "case_id": "biz_031",
+      "expected_chunk_ids": [
+        "fcd64d72_0000_8c469979",
+        "fcd64d72_0001_c96c92d6",
+        "fcd64d72_0002_c12a6592"
+      ],
+      "retrieved_chunk_ids": [
+        "fcd64d72_0000_8c469979",
+        "fcd64d72_0002_c12a6592",
+        "fcd64d72_0004_594283a8",
+        "fcd64d72_0008_210f7b59",
+        "fcd64d72_0001_c96c92d6",
+        "fcd64d72_0012_d8842b87",
+        "fcd64d72_0015_cb8dee3b",
+        "fcd64d72_0003_be0c28df",
+        "771189d9_0004_9c10c5c6",
+        "fcd64d72_0013_bce50858"
+      ],
+      "category": "feature",
+      "difficulty": "easy",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.3333,
+        "recall@3": 0.6667,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2682.4
+    },
+    {
+      "query": "Should I call apt or apt-get from a non-interactive script?",
+      "case_id": "biz_032",
+      "expected_chunk_ids": [
+        "fcd64d72_0002_c12a6592"
+      ],
+      "retrieved_chunk_ids": [
+        "fcd64d72_0002_c12a6592",
+        "fcd64d72_0003_be0c28df",
+        "4acb23a5_0016_c42be69e",
+        "fcd64d72_0014_691da3b8",
+        "4acb23a5_0015_50888227",
+        "4acb23a5_0019_5e7c2a0c",
+        "fcd64d72_0012_d8842b87",
+        "fcd64d72_0004_594283a8",
+        "fcd64d72_0007_271db3c7",
+        "771189d9_0002_10cfcfd1"
+      ],
+      "category": "limitation",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 1.0,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2762.3
+    },
+    {
+      "query": "What is the important difference between dpkg and apt when installing packages?",
+      "case_id": "biz_033",
+      "expected_chunk_ids": [
+        "fcd64d72_0008_210f7b59"
+      ],
+      "retrieved_chunk_ids": [
+        "fcd64d72_0008_210f7b59",
+        "fcd64d72_0000_8c469979",
+        "fcd64d72_0002_c12a6592",
+        "fcd64d72_0004_594283a8",
+        "fcd64d72_0010_c0525a4a",
+        "fcd64d72_0011_3fbcb97c",
+        "fcd64d72_0007_271db3c7",
+        "4acb23a5_0003_7038038b",
+        "fcd64d72_0015_cb8dee3b",
+        "fcd64d72_0009_1fc6922f"
+      ],
+      "category": "comparison",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 1.0,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2683.3
+    },
+    {
+      "query": "What should I consider before enabling Ubuntu's Universe or Multiverse repositories?",
+      "case_id": "biz_034",
+      "expected_chunk_ids": [
+        "fcd64d72_0012_d8842b87",
+        "fcd64d72_0013_bce50858",
+        "fcd64d72_0014_691da3b8"
+      ],
+      "retrieved_chunk_ids": [
+        "fcd64d72_0014_691da3b8",
+        "fcd64d72_0013_bce50858",
+        "fcd64d72_0012_d8842b87",
+        "fcd64d72_0015_cb8dee3b",
+        "fcd64d72_0016_9eb77670",
+        "fcd64d72_0000_8c469979",
+        "fcd64d72_0002_c12a6592",
+        "4acb23a5_0002_6d8e8409",
+        "4acb23a5_0001_7f8593c4",
+        "771189d9_0003_dca1a745"
+      ],
+      "category": "limitation",
+      "difficulty": "hard",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.3333,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2643.8
+    },
+    {
+      "query": "Why can I not log in directly as root on a default Ubuntu installation?",
+      "case_id": "biz_035",
+      "expected_chunk_ids": [
+        "771189d9_0000_fca52ff5",
+        "771189d9_0001_90fff5fb"
+      ],
+      "retrieved_chunk_ids": [
+        "771189d9_0000_fca52ff5",
+        "4acb23a5_0019_5e7c2a0c",
+        "771189d9_0003_dca1a745",
+        "fcd64d72_0012_d8842b87",
+        "4acb23a5_0015_50888227",
+        "fcd64d72_0015_cb8dee3b",
+        "4acb23a5_0010_b8067e9c",
+        "771189d9_0005_824fbbe8",
+        "771189d9_0004_9c10c5c6",
+        "771189d9_0001_90fff5fb"
+      ],
+      "category": "concept",
+      "difficulty": "easy",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.5,
+        "recall@3": 0.5,
+        "recall@5": 0.5,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2710.0
+    },
+    {
+      "query": "How can I enable or disable the Ubuntu root account password?",
+      "case_id": "biz_036",
+      "expected_chunk_ids": [
+        "771189d9_0003_dca1a745"
+      ],
+      "retrieved_chunk_ids": [
+        "771189d9_0003_dca1a745",
+        "771189d9_0000_fca52ff5",
+        "771189d9_0001_90fff5fb",
+        "fcd64d72_0012_d8842b87",
+        "f4661936_0001_af62613c",
+        "771189d9_0009_2f0d5fec",
+        "771189d9_0004_9c10c5c6",
+        "f4661936_0016_c5db90d7",
+        "771189d9_0020_089424b7",
+        "771189d9_0014_44bc7dd9"
+      ],
+      "category": "procedure",
+      "difficulty": "easy",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 1.0,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2745.9
+    },
+    {
+      "query": "What happens to a user's home directory when I delete the account?",
+      "case_id": "biz_037",
+      "expected_chunk_ids": [
+        "771189d9_0008_684dc373",
+        "771189d9_0009_2f0d5fec"
+      ],
+      "retrieved_chunk_ids": [
+        "771189d9_0009_2f0d5fec",
+        "771189d9_0012_4cec4499",
+        "771189d9_0020_089424b7",
+        "771189d9_0011_820d6b10",
+        "771189d9_0000_fca52ff5",
+        "771189d9_0004_9c10c5c6",
+        "771189d9_0013_c461da17",
+        "771189d9_0010_4a3cda4c",
+        "771189d9_0014_44bc7dd9",
+        "771189d9_0021_3b6d6b84"
+      ],
+      "category": "limitation",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.5,
+        "recall@3": 0.5,
+        "recall@5": 0.5,
+        "recall@10": 0.5,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2751.8
+    },
+    {
+      "query": "What UID ranges does the Ubuntu guide use to distinguish system and regular users?",
+      "case_id": "biz_038",
+      "expected_chunk_ids": [
+        "771189d9_0005_824fbbe8",
+        "771189d9_0006_0b2efde1"
+      ],
+      "retrieved_chunk_ids": [
+        "771189d9_0006_0b2efde1",
+        "771189d9_0005_824fbbe8",
+        "771189d9_0007_d4d3a594",
+        "fcd64d72_0013_bce50858",
+        "fcd64d72_0015_cb8dee3b",
+        "771189d9_0004_9c10c5c6",
+        "771189d9_0000_fca52ff5",
+        "771189d9_0001_90fff5fb",
+        "771189d9_0011_820d6b10",
+        "fcd64d72_0002_c12a6592"
+      ],
+      "category": "concept",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.5,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2648.0
+    },
+    {
+      "query": "Why can a user with a locked password still log in through SSH?",
+      "case_id": "biz_039",
+      "expected_chunk_ids": [
+        "771189d9_0010_4a3cda4c",
+        "771189d9_0020_089424b7"
+      ],
+      "retrieved_chunk_ids": [
+        "771189d9_0020_089424b7",
+        "771189d9_0021_3b6d6b84",
+        "771189d9_0000_fca52ff5",
+        "771189d9_0010_4a3cda4c",
+        "f4661936_0008_cea79a95",
+        "771189d9_0001_90fff5fb",
+        "e80edc3b_0002_53fae882",
+        "771189d9_0014_44bc7dd9",
+        "771189d9_0015_944aad0c",
+        "cfc18307_0031_457bbbaa"
+      ],
+      "category": "troubleshooting",
+      "difficulty": "hard",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 0.5,
+        "recall@3": 0.5,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2743.1
+    },
+    {
+      "query": "How can I restrict SSH login to a group of approved Ubuntu users?",
+      "case_id": "biz_040",
+      "expected_chunk_ids": [
+        "771189d9_0021_3b6d6b84"
+      ],
+      "retrieved_chunk_ids": [
+        "771189d9_0021_3b6d6b84",
+        "771189d9_0020_089424b7",
+        "771189d9_0011_820d6b10",
+        "f4661936_0003_01ff1e80",
+        "771189d9_0004_9c10c5c6",
+        "771189d9_0000_fca52ff5",
+        "f4661936_0008_cea79a95",
+        "771189d9_0005_824fbbe8",
+        "771189d9_0006_0b2efde1",
+        "771189d9_0007_d4d3a594"
+      ],
+      "category": "configuration",
+      "difficulty": "medium",
+      "generated_answer": null,
+      "metrics": {
+        "hit_rate@1": 1.0,
+        "hit_rate@3": 1.0,
+        "hit_rate@5": 1.0,
+        "hit_rate@10": 1.0,
+        "recall@1": 1.0,
+        "recall@3": 1.0,
+        "recall@5": 1.0,
+        "recall@10": 1.0,
+        "mrr": 1.0
+      },
+      "elapsed_ms": 2802.9
+    }
+  ],
+  "metadata": {
+    "evaluator": "CustomEvaluator",
+    "retrieval_pipeline": "HybridSearch + Reranker",
+    "reranker_enabled": true,
+    "reranker_type": "cross_encoder"
+  }
+}
