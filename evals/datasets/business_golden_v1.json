@@ -1,0 +1,728 @@
+{
+  "name": "business_golden_v1",
+  "version": "1.0",
+  "description": "Golden set based on real business documents under ops_kb.",
+  "source_root": "ops_kb",
+  "test_cases": [
+    {
+      "id": "biz_001",
+      "query": "When I start a Compose project, how do containers find each other?",
+      "reference_answer": "Compose creates a default bridge network for the project, and containers on it can reach one another by service name through Compose's internal DNS.",
+      "evidence": [
+        {
+          "source": "docker-compose-networking.pdf",
+          "text": "By default, Compose sets up a single network for your app. Each container for a service joins the default network and is discoverable by its service name."
+        }
+      ],
+      "expected_sources": ["docker-compose-networking.pdf"],
+      "expected_chunk_ids": ["57d10e59_0001_004baebb"],
+      "category": "feature",
+      "difficulty": "easy",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_002",
+      "query": "Should a Compose service connect to another container by its IP address?",
+      "reference_answer": "No. Container IP addresses are assigned dynamically and can change after a restart or recreation, so services should use the stable service name instead.",
+      "evidence": [
+        {
+          "source": "docker-compose-networking.pdf",
+          "text": "Docker assigns container IP addresses dynamically each time a container starts, so you should always reference services by name, not IP address."
+        }
+      ],
+      "expected_sources": ["docker-compose-networking.pdf"],
+      "expected_chunk_ids": ["57d10e59_0003_1e3e4660"],
+      "category": "limitation",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_003",
+      "query": "What changes when a Compose service uses network_mode: host?",
+      "reference_answer": "The container shares the host network stack, does not need or support port mapping, and service-name DNS resolution does not work.",
+      "evidence": [
+        {
+          "source": "docker-compose-networking.pdf",
+          "text": "The host mode shares the host's network stack. No port mapping is needed or supported, and service name DNS resolution does not work."
+        }
+      ],
+      "expected_sources": ["docker-compose-networking.pdf"],
+      "expected_chunk_ids": ["57d10e59_0006_833a1873"],
+      "category": "configuration",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_004",
+      "query": "How can I isolate a Compose network while still letting one service reach the internet?",
+      "reference_answer": "Define an internal network with `internal: true` for isolated services, and attach a service that needs external access to both that internal network and a normal public network.",
+      "evidence": [
+        {
+          "source": "docker-compose-networking.pdf",
+          "text": "Setting internal: true creates a network without a connection to the host's network interfaces. A worker connected to both an internal and a non-internal public network can still reach the internet via the public network."
+        }
+      ],
+      "expected_sources": ["docker-compose-networking.pdf"],
+      "expected_chunk_ids": ["57d10e59_0010_cf2baea1", "57d10e59_0014_8c240b82"],
+      "category": "cross_section",
+      "difficulty": "hard",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_005",
+      "query": "What does `docker compose up` do in the Compose quickstart?",
+      "reference_answer": "It creates and starts the configured services; in the example, Compose builds the web image, pulls the Redis image, and starts both containers.",
+      "evidence": [
+        {
+          "source": "docker-compose-start.pdf",
+          "text": "Start up your application: docker compose up. With a single command, you create and start all the services. Compose builds your web image, pulls the Redis image, and starts both containers."
+        }
+      ],
+      "expected_sources": ["docker-compose-start.pdf"],
+      "expected_chunk_ids": ["9615636f_0009_b0f6b781"],
+      "category": "procedure",
+      "difficulty": "easy",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_006",
+      "query": "How do I prevent the web service from starting before Redis is ready?",
+      "reference_answer": "Add a Redis healthcheck and make the web service depend on Redis with `condition: service_healthy`; the example checks `redis-cli ping` every 5 seconds with a 3-second timeout, 5 retries, and a 10-second start period.",
+      "evidence": [
+        {
+          "source": "docker-compose-start.pdf",
+          "text": "To fix the startup race, Compose needs to wait until redis is confirmed healthy before starting web. Use depends_on with condition: service_healthy and a healthcheck whose test is [CMD, redis-cli, ping]."
+        },
+        {
+          "source": "docker-compose-start.pdf",
+          "text": "The example sets interval: 5s, timeout: 3s, retries: 5, and start_period: 10s."
+        }
+      ],
+      "expected_sources": ["docker-compose-start.pdf"],
+      "expected_chunk_ids": ["9615636f_0011_a87438b5", "9615636f_0013_4c9dd91f"],
+      "category": "troubleshooting",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_007",
+      "query": "When does Compose Watch sync files and when does it rebuild the image?",
+      "reference_answer": "The `sync`/restart rule watches the project directory and copies changed files into the running container, while a `rebuild` rule for `requirements.txt` rebuilds the image when dependencies change.",
+      "evidence": [
+        {
+          "source": "docker-compose-start.pdf",
+          "text": "The sync/restart action watches the project directory and copies changed files into /code, then restarts the container. The rebuild action on requirements.txt triggers a full image rebuild when a dependency is added."
+        }
+      ],
+      "expected_sources": ["docker-compose-start.pdf"],
+      "expected_chunk_ids": ["9615636f_0015_d63aeca0", "9615636f_0016_c319599e"],
+      "category": "comparison",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_008",
+      "query": "Why does the Compose example use a named volume for Redis, and how do I reset it?",
+      "reference_answer": "The named volume stores Redis data outside the container lifecycle, so the counter survives `docker compose down` followed by `up`. Use `docker compose down -v` intentionally when the named volume and its stored data should be removed.",
+      "evidence": [
+        {
+          "source": "docker-compose-start.pdf",
+          "text": "A named volume fixes this by storing the data on the host, outside the container lifecycle. It persists between compose down and compose up cycles."
+        },
+        {
+          "source": "docker-compose-start.pdf",
+          "text": "The -v flag removes named volumes along with the containers. Use this intentionally—it permanently deletes the stored data."
+        }
+      ],
+      "expected_sources": ["docker-compose-start.pdf"],
+      "expected_chunk_ids": ["9615636f_0019_5bca7994", "9615636f_0021_f0b0ae0a"],
+      "category": "limitation",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_009",
+      "query": "Which Ubuntu versions and CPU architectures are listed for Docker Engine installation?",
+      "reference_answer": "The guide lists 64-bit Ubuntu 26.04 LTS, 24.04 LTS, and 22.04 LTS, and states compatibility with x86_64/amd64, armhf, arm64, s390x, and ppc64el.",
+      "evidence": [
+        {
+          "source": "docker-install-on-ubuntu.pdf",
+          "text": "Docker Engine requires the 64-bit version of Ubuntu Resolute 26.04 LTS, Ubuntu Noble 24.04 LTS, or Ubuntu Jammy 22.04 LTS, and is compatible with x86_64/amd64, armhf, arm64, s390x, and ppc64el."
+        }
+      ],
+      "expected_sources": ["docker-install-on-ubuntu.pdf"],
+      "expected_chunk_ids": ["4acb23a5_0001_7f8593c4", "4acb23a5_0002_6d8e8409"],
+      "category": "limitation",
+      "difficulty": "easy",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_010",
+      "query": "What firewall caveat should I check before exposing Docker container ports?",
+      "reference_answer": "Ports exposed by Docker bypass ufw or firewalld rules, so the firewall configuration must be reviewed before exposing container ports.",
+      "evidence": [
+        {
+          "source": "docker-install-on-ubuntu.pdf",
+          "text": "If you use ufw or firewalld, be aware that when you expose container ports using Docker, these ports bypass your firewall rules."
+        }
+      ],
+      "expected_sources": ["docker-install-on-ubuntu.pdf"],
+      "expected_chunk_ids": ["4acb23a5_0001_7f8593c4"],
+      "category": "limitation",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_011",
+      "query": "What is the documented flow for installing Docker Engine from Docker's apt repository?",
+      "reference_answer": "Set up Docker's apt repository by adding its GPG key and repository entry, run `sudo apt update`, then install the Docker Engine packages such as `docker-ce`, `docker-ce-cli`, `containerd.io`, Buildx, and Compose plugins; finally verify with `systemctl status docker` and `docker run hello-world`.",
+      "evidence": [
+        {
+          "source": "docker-install-on-ubuntu.pdf",
+          "text": "Before the first installation, set up the Docker apt repository. Add Docker's official GPG key, add the repository to apt sources, and run sudo apt update."
+        },
+        {
+          "source": "docker-install-on-ubuntu.pdf",
+          "text": "Install the Docker packages with sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin."
+        },
+        {
+          "source": "docker-install-on-ubuntu.pdf",
+          "text": "Verify with sudo systemctl status docker and sudo docker run hello-world."
+        }
+      ],
+      "expected_sources": ["docker-install-on-ubuntu.pdf"],
+      "expected_chunk_ids": ["4acb23a5_0005_7bfc3174", "4acb23a5_0006_106680e0", "4acb23a5_0009_ae291496", "4acb23a5_0010_b8067e9c"],
+      "category": "cross_section",
+      "difficulty": "hard",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_012",
+      "query": "Is Docker's convenience install script recommended for production?",
+      "reference_answer": "No. The guide says the convenience script is not recommended for production; it requires root or sudo, installs dependencies without confirmation, and may cause unexpected major version upgrades.",
+      "evidence": [
+        {
+          "source": "docker-install-on-ubuntu.pdf",
+          "text": "The convenience script isn't recommended for production environments, but it is useful for development environments."
+        },
+        {
+          "source": "docker-install-on-ubuntu.pdf",
+          "text": "The script requires root or sudo privileges, installs dependencies and recommendations without asking for confirmation, and may result in unexpected major version upgrades."
+        }
+      ],
+      "expected_sources": ["docker-install-on-ubuntu.pdf"],
+      "expected_chunk_ids": ["4acb23a5_0016_c42be69e", "4acb23a5_0017_899f2a71"],
+      "category": "limitation",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_013",
+      "query": "What production-specific changes might I make to a Compose configuration?",
+      "reference_answer": "The guide suggests removing application-code volume bindings, changing host ports, setting production environment variables such as lower logging verbosity, adding a restart policy such as `restart: always`, and possibly adding services such as a log aggregator.",
+      "evidence": [
+        {
+          "source": "docker-use-compose-production.pdf",
+          "text": "Production changes might include removing volume bindings for application code, binding different host ports, setting environment variables differently, specifying a restart policy such as restart: always, and adding extra services such as a log aggregator."
+        }
+      ],
+      "expected_sources": ["docker-use-compose-production.pdf"],
+      "expected_chunk_ids": ["d8bbe4e7_0000_7c6c1d90", "d8bbe4e7_0001_1eaa3115"],
+      "category": "configuration",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_014",
+      "query": "How can I redeploy only the Compose service named web?",
+      "reference_answer": "Rebuild the service with `docker compose build web`, then run `docker compose up --no-deps -d web`; `--no-deps` prevents dependent services from being recreated.",
+      "evidence": [
+        {
+          "source": "docker-use-compose-production.pdf",
+          "text": "To redeploy a service called web, use docker compose build web followed by docker compose up --no-deps -d web. The --no-deps flag prevents Compose from recreating services that web depends on."
+        }
+      ],
+      "expected_sources": ["docker-use-compose-production.pdf"],
+      "expected_chunk_ids": ["d8bbe4e7_0002_8fde959a"],
+      "category": "procedure",
+      "difficulty": "easy",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_015",
+      "query": "Which directives are needed in a basic NGINX HTTPS server block?",
+      "reference_answer": "Enable `ssl` on the listening socket, listen on port 443, set `server_name`, and specify `ssl_certificate` and `ssl_certificate_key`.",
+      "evidence": [
+        {
+          "source": "nginx-https.pdf",
+          "text": "To configure an HTTPS server, the ssl parameter must be enabled on listening sockets in the server block, and the locations of the server certificate and private key files should be specified."
+        },
+        {
+          "source": "nginx-https.pdf",
+          "text": "The example uses listen 443 ssl, server_name, ssl_certificate, and ssl_certificate_key."
+        }
+      ],
+      "expected_sources": ["nginx-https.pdf"],
+      "expected_chunk_ids": ["e80edc3b_0000_e0b0b7f5", "e80edc3b_0001_f5724b85"],
+      "category": "configuration",
+      "difficulty": "easy",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_016",
+      "query": "How should NGINX's private key file be protected?",
+      "reference_answer": "The private key is a secure entity and should be stored with restricted file access, while still being readable by the NGINX master process.",
+      "evidence": [
+        {
+          "source": "nginx-https.pdf",
+          "text": "The private key is a secure entity and should be stored in a file with restricted access, however, it must be readable by nginx's master process."
+        }
+      ],
+      "expected_sources": ["nginx-https.pdf"],
+      "expected_chunk_ids": ["e80edc3b_0002_53fae882", "e80edc3b_0003_27dc7515"],
+      "category": "limitation",
+      "difficulty": "easy",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_017",
+      "query": "Do I need to explicitly set ssl_protocols and ssl_ciphers in modern NGINX?",
+      "reference_answer": "Usually not. The document states that modern NGINX defaults to TLSv1.2/TLSv1.3 and `HIGH:!aNULL:!MD5`, so explicitly configuring these directives is generally unnecessary, although defaults have changed over time.",
+      "evidence": [
+        {
+          "source": "nginx-https.pdf",
+          "text": "By default nginx uses ssl_protocols TLSv1.2 TLSv1.3 and ssl_ciphers HIGH:!aNULL:!MD5, so configuring them explicitly is generally not needed."
+        }
+      ],
+      "expected_sources": ["nginx-https.pdf"],
+      "expected_chunk_ids": ["e80edc3b_0003_27dc7515", "e80edc3b_0004_c0f6d988"],
+      "category": "configuration",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_018",
+      "query": "How can I reduce the cost of repeated SSL handshakes in NGINX?",
+      "reference_answer": "Enable keepalive connections and reuse SSL session parameters through a shared SSL session cache; the example uses a 10 MB shared cache and a 10-minute timeout.",
+      "evidence": [
+        {
+          "source": "nginx-https.pdf",
+          "text": "Keepalive connections send several requests over one connection, and reusing SSL session parameters avoids handshakes for parallel and subsequent requests."
+        },
+        {
+          "source": "nginx-https.pdf",
+          "text": "The example configures ssl_session_cache shared:SSL:10m and ssl_session_timeout 10m."
+        }
+      ],
+      "expected_sources": ["nginx-https.pdf"],
+      "expected_chunk_ids": ["e80edc3b_0005_69b30b57", "e80edc3b_0006_1ee6fff2", "e80edc3b_0007_b348ea5e"],
+      "category": "feature",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_019",
+      "query": "Why can NGINX fail when an SSL certificate chain is concatenated in the wrong order?",
+      "reference_answer": "The server certificate must appear before the intermediate certificates in the combined file. If the order is wrong, NGINX may try to use the bundle's first certificate instead of the server certificate and report an SSL_CTX_use_PrivateKey_file key-values error.",
+      "evidence": [
+        {
+          "source": "nginx-https.pdf",
+          "text": "The server certificate must appear before the chained certificates in the combined file."
+        },
+        {
+          "source": "nginx-https.pdf",
+          "text": "If the server certificate and bundle have been concatenated in the wrong order, nginx will fail to start and display an SSL_CTX_use_PrivateKey_file ... key values fail error because it used the bundle's first certificate instead of the server certificate."
+        }
+      ],
+      "expected_sources": ["nginx-https.pdf"],
+      "expected_chunk_ids": ["e80edc3b_0008_92d765bf", "e80edc3b_0009_e48e92e1", "e80edc3b_0010_670ed050", "e80edc3b_0012_ffcb23ba", "e80edc3b_0013_7118b4a6"],
+      "category": "cross_section",
+      "difficulty": "hard",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_020",
+      "query": "How does SNI let NGINX serve multiple HTTPS sites from one IP?",
+      "reference_answer": "TLS Server Name Indication lets the browser send the requested server name during the SSL handshake, allowing NGINX to select the corresponding certificate. SNI must be supported by both the OpenSSL library used to build NGINX and the library linked at runtime.",
+      "evidence": [
+        {
+          "source": "nginx-https.pdf",
+          "text": "TLS Server Name Indication allows a browser to pass the requested server name during the SSL handshake, so the server knows which certificate to use."
+        },
+        {
+          "source": "nginx-https.pdf",
+          "text": "To use SNI in nginx, it must be supported in both the OpenSSL library with which the nginx binary was built and the library dynamically linked at runtime."
+        }
+      ],
+      "expected_sources": ["nginx-https.pdf"],
+      "expected_chunk_ids": ["e80edc3b_0035_8bf63cb2", "e80edc3b_0036_15bf8964", "e80edc3b_0037_57350b2d", "e80edc3b_0039_08619ecb"],
+      "category": "concept",
+      "difficulty": "hard",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_021",
+      "query": "How are NGINX configuration contexts nested?",
+      "reference_answer": "The `events` and `http` directives are in the main context, `server` is inside `http`, and `location` is inside `server`; text outside a context is in the main context.",
+      "evidence": [
+        {
+          "source": "nginx-reverse-proxy.pdf",
+          "text": "Directives placed outside contexts are in the main context. The events and http directives reside in the main context, server in http, and location in server."
+        }
+      ],
+      "expected_sources": ["nginx-reverse-proxy.pdf"],
+      "expected_chunk_ids": ["cfc18307_0017_f148bbf5"],
+      "category": "concept",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_022",
+      "query": "How do I configure NGINX to serve normal files from /data/www and images from /data/images?",
+      "reference_answer": "Use `location / { root /data/www; }` for normal requests and `location /images/ { root /data; }` for image requests, so `/images/example.png` maps to `/data/images/example.png`.",
+      "evidence": [
+        {
+          "source": "nginx-reverse-proxy.pdf",
+          "text": "The location / block uses root /data/www, and the location /images/ block uses root /data. Requests with /images/ are sent to /data/images."
+        },
+        {
+          "source": "nginx-reverse-proxy.pdf",
+          "text": "A request for http://localhost/images/example.png is served from /data/images/example.png, while other requests are mapped to /data/www."
+        }
+      ],
+      "expected_sources": ["nginx-reverse-proxy.pdf"],
+      "expected_chunk_ids": ["cfc18307_0023_3b3cd2cf", "cfc18307_0024_07cc561d", "cfc18307_0025_f3342298", "cfc18307_0028_dd1271c5", "cfc18307_0029_2887e0a0"],
+      "category": "procedure",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_023",
+      "query": "When multiple NGINX location blocks match a request, which one is selected?",
+      "reference_answer": "NGINX first considers prefix locations and remembers the longest matching prefix, then checks regular expressions. If a regular expression matches, it is selected; otherwise the remembered longest prefix is used.",
+      "evidence": [
+        {
+          "source": "nginx-reverse-proxy.pdf",
+          "text": "NGINX selects the location with the longest prefix, then checks regular expressions. If a regular expression matches, NGINX picks it; otherwise it picks the remembered prefix location."
+        }
+      ],
+      "expected_sources": ["nginx-reverse-proxy.pdf"],
+      "expected_chunk_ids": ["cfc18307_0024_07cc561d", "cfc18307_0025_f3342298", "cfc18307_0042_2f8ca40c"],
+      "category": "concept",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_024",
+      "query": "What should I do after changing an NGINX configuration, and where do I look if it fails?",
+      "reference_answer": "Reload NGINX with `nginx -s reload`; if behavior is unexpected, inspect `access.log` and `error.log` under `/usr/local/nginx/logs` or `/var/log/nginx`.",
+      "evidence": [
+        {
+          "source": "nginx-reverse-proxy.pdf",
+          "text": "To apply the new configuration, start nginx or send the reload signal with nginx -s reload."
+        },
+        {
+          "source": "nginx-reverse-proxy.pdf",
+          "text": "If something does not work as expected, look in access.log and error.log in /usr/local/nginx/logs or /var/log/nginx."
+        }
+      ],
+      "expected_sources": ["nginx-reverse-proxy.pdf"],
+      "expected_chunk_ids": ["cfc18307_0030_6b749d37", "cfc18307_0031_457bbbaa"],
+      "category": "troubleshooting",
+      "difficulty": "easy",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_025",
+      "query": "How does the NGINX simple proxy example forward non-image requests?",
+      "reference_answer": "Define a proxy server and put `proxy_pass http://localhost:8080;` in the `/` location so normal requests are forwarded to the server listening on port 8080.",
+      "evidence": [
+        {
+          "source": "nginx-reverse-proxy.pdf",
+          "text": "The simple proxy server receives requests, passes them to a proxied server, retrieves responses, and sends them to clients."
+        },
+        {
+          "source": "nginx-reverse-proxy.pdf",
+          "text": "In the first location block, use proxy_pass with the proxied server; the example uses proxy_pass http://localhost:8080."
+        }
+      ],
+      "expected_sources": ["nginx-reverse-proxy.pdf"],
+      "expected_chunk_ids": ["cfc18307_0032_1576965b", "cfc18307_0036_b2fae41e", "cfc18307_0037_fada72d9"],
+      "category": "procedure",
+      "difficulty": "hard",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_026",
+      "query": "How can an NGINX proxy serve image files locally while forwarding other requests?",
+      "reference_answer": "Use a regular-expression location matching `.gif`, `.jpg`, or `.png` with `root /data/images`; send the remaining requests to the proxied server with the `/` location and `proxy_pass`.",
+      "evidence": [
+        {
+          "source": "nginx-reverse-proxy.pdf",
+          "text": "The image location uses a regular expression matching gif, jpg, and png and maps those requests to /data/images."
+        },
+        {
+          "source": "nginx-reverse-proxy.pdf",
+          "text": "The resulting proxy configuration has location / with proxy_pass http://localhost:8080/ and a regular-expression image location with root /data/images."
+        }
+      ],
+      "expected_sources": ["nginx-reverse-proxy.pdf"],
+      "expected_chunk_ids": ["cfc18307_0039_07327e9e", "cfc18307_0040_d5aded3b", "cfc18307_0042_2f8ca40c", "cfc18307_0043_d6633e28", "cfc18307_0044_304dda2d"],
+      "category": "cross_section",
+      "difficulty": "hard",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_027",
+      "query": "Is ufw enabled by default on Ubuntu, and how do I turn it on or off?",
+      "reference_answer": "Ufw is initially disabled by default. Run `sudo ufw enable` to enable it and `sudo ufw disable` to disable it.",
+      "evidence": [
+        {
+          "source": "ubuntu-firewalls.pdf",
+          "text": "The default firewall configuration tool for Ubuntu is ufw, and ufw by default is initially disabled. Use sudo ufw enable or sudo ufw disable."
+        }
+      ],
+      "expected_sources": ["ubuntu-firewalls.pdf"],
+      "expected_chunk_ids": ["f4661936_0001_af62613c"],
+      "category": "configuration",
+      "difficulty": "easy",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_028",
+      "query": "How do I open or remove a numbered ufw rule?",
+      "reference_answer": "Insert a rule with a position using `sudo ufw insert 1 allow 80`, list numbered rules with `sudo ufw status numbered`, and remove a rule with `sudo ufw delete deny 22`.",
+      "evidence": [
+        {
+          "source": "ubuntu-firewalls.pdf",
+          "text": "Rules can be added using a numbered format: sudo ufw insert 1 allow 80; view them with sudo ufw status numbered; remove one with sudo ufw delete deny 22."
+        }
+      ],
+      "expected_sources": ["ubuntu-firewalls.pdf"],
+      "expected_chunk_ids": ["f4661936_0001_af62613c", "f4661936_0002_64210cb6"],
+      "category": "procedure",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_029",
+      "query": "How can I allow SSH only from a specific host or subnet and preview the rule first?",
+      "reference_answer": "Use a rule such as `sudo ufw allow proto tcp from 192.168.0.2 to any port 22`; replace the host with `192.168.0.0/24` for a subnet. Add `--dry-run` to preview the resulting rules without applying them.",
+      "evidence": [
+        {
+          "source": "ubuntu-firewalls.pdf",
+          "text": "The example allows SSH from 192.168.0.2 with sudo ufw allow proto tcp from 192.168.0.2 to any port 22; replace it with 192.168.0.0/24 to allow the entire subnet."
+        },
+        {
+          "source": "ubuntu-firewalls.pdf",
+          "text": "Adding --dry-run to a ufw command outputs the resulting rules but does not apply them."
+        }
+      ],
+      "expected_sources": ["ubuntu-firewalls.pdf"],
+      "expected_chunk_ids": ["f4661936_0003_01ff1e80", "f4661936_0004_e15cd5b8"],
+      "category": "configuration",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_030",
+      "query": "Why might a firewall rule not produce logs, and where should the logging rule go?",
+      "reference_answer": "Firewall logging rules must be enabled to generate logs, and they must appear before any terminating rule such as ACCEPT, DROP, or REJECT. Ufw logging can be enabled with `sudo ufw logging on`.",
+      "evidence": [
+        {
+          "source": "ubuntu-firewalls.pdf",
+          "text": "Logging rules must be included for firewall logs to be generated, and they must come before any applicable terminating rule such as ACCEPT, DROP, or REJECT."
+        },
+        {
+          "source": "ubuntu-firewalls.pdf",
+          "text": "If using ufw, turn on logging with sudo ufw logging on."
+        }
+      ],
+      "expected_sources": ["ubuntu-firewalls.pdf"],
+      "expected_chunk_ids": ["f4661936_0020_ac37203f", "f4661936_0021_3d1eb27e"],
+      "category": "troubleshooting",
+      "difficulty": "hard",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_031",
+      "query": "What package-management tasks does Ubuntu's apt command support?",
+      "reference_answer": "The apt commands can install software, remove it, upgrade installed packages, update the package index, and upgrade the Ubuntu system.",
+      "evidence": [
+        {
+          "source": "ubuntu-package-management.pdf",
+          "text": "The commands provided by apt install new software packages, upgrade existing packages, update the package list index, and upgrade the entire Ubuntu system."
+        },
+        {
+          "source": "ubuntu-package-management.pdf",
+          "text": "The guide gives sudo apt update, sudo apt install nmap, and sudo apt upgrade examples."
+        }
+      ],
+      "expected_sources": ["ubuntu-package-management.pdf"],
+      "expected_chunk_ids": ["fcd64d72_0000_8c469979", "fcd64d72_0001_c96c92d6", "fcd64d72_0002_c12a6592"],
+      "category": "feature",
+      "difficulty": "easy",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_032",
+      "query": "Should I call apt or apt-get from a non-interactive script?",
+      "reference_answer": "Use `apt-get` in scripts; the document describes `apt` as an interactive command-line tool and says the basic syntax of the two tools is identical.",
+      "evidence": [
+        {
+          "source": "ubuntu-package-management.pdf",
+          "text": "While apt is a command-line tool, it is intended to be used interactively and not called from non-interactive scripts. The apt-get command should be used in scripts."
+        }
+      ],
+      "expected_sources": ["ubuntu-package-management.pdf"],
+      "expected_chunk_ids": ["fcd64d72_0002_c12a6592"],
+      "category": "limitation",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_033",
+      "query": "What is the important difference between dpkg and apt when installing packages?",
+      "reference_answer": "Dpkg can install, remove, and build Debian packages, but it cannot automatically download and install packages or their dependencies; APT and Aptitude add those higher-level capabilities.",
+      "evidence": [
+        {
+          "source": "ubuntu-package-management.pdf",
+          "text": "Dpkg is a package manager for Debian-based systems, but unlike other package management systems it cannot automatically download and install packages or their dependencies. APT and Aptitude layer additional features on top of dpkg."
+        }
+      ],
+      "expected_sources": ["ubuntu-package-management.pdf"],
+      "expected_chunk_ids": ["fcd64d72_0008_210f7b59"],
+      "category": "comparison",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_034",
+      "query": "What should I consider before enabling Ubuntu's Universe or Multiverse repositories?",
+      "reference_answer": "Universe and Multiverse are community-maintained and not officially supported; they do not receive security patches except through Ubuntu Pro's Expanded Security Maintenance. Multiverse packages can also have licensing issues, so non-standard repositories should be researched carefully.",
+      "evidence": [
+        {
+          "source": "ubuntu-package-management.pdf",
+          "text": "Universe and Multiverse are not officially supported and do not receive security patches except through Ubuntu Pro's Expanded Security Maintenance."
+        },
+        {
+          "source": "ubuntu-package-management.pdf",
+          "text": "Packages in Multiverse often have licensing issues, and administrators should research non-standard package sources and their origins carefully."
+        }
+      ],
+      "expected_sources": ["ubuntu-package-management.pdf"],
+      "expected_chunk_ids": ["fcd64d72_0012_d8842b87", "fcd64d72_0013_bce50858", "fcd64d72_0014_691da3b8"],
+      "category": "limitation",
+      "difficulty": "hard",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_035",
+      "query": "Why can I not log in directly as root on a default Ubuntu installation?",
+      "reference_answer": "Ubuntu disables the administrative root account by default by assigning it a password hash that matches no possible value. Administrative work is instead performed through sudo using an authorized user's own password.",
+      "evidence": [
+        {
+          "source": "ubuntu-user-management.pdf",
+          "text": "Ubuntu disables the administrative root account by default; it has a password hash that matches no possible value and cannot log in directly. The sudo utility is used for administrative duties."
+        },
+        {
+          "source": "ubuntu-user-management.pdf",
+          "text": "Sudo lets an authorized user temporarily elevate privileges using their own password and provides accountability for user actions."
+        }
+      ],
+      "expected_sources": ["ubuntu-user-management.pdf"],
+      "expected_chunk_ids": ["771189d9_0000_fca52ff5", "771189d9_0001_90fff5fb"],
+      "category": "concept",
+      "difficulty": "easy",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_036",
+      "query": "How can I enable or disable the Ubuntu root account password?",
+      "reference_answer": "To enable it, assign a new root password with `sudo passwd root`; to disable the root account password, run `sudo passwd -l root`.",
+      "evidence": [
+        {
+          "source": "ubuntu-user-management.pdf",
+          "text": "To enable the root account, give it a password with sudo passwd root. To disable the root account password, use sudo passwd -l root."
+        }
+      ],
+      "expected_sources": ["ubuntu-user-management.pdf"],
+      "expected_chunk_ids": ["771189d9_0003_dca1a745"],
+      "category": "procedure",
+      "difficulty": "easy",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_037",
+      "query": "What happens to a user's home directory when I delete the account?",
+      "reference_answer": "`sudo deluser username` deletes the user account and its primary group, but does not remove the user's home directory; that directory must be retained or removed separately according to policy.",
+      "evidence": [
+        {
+          "source": "ubuntu-user-management.pdf",
+          "text": "To delete a user account and its primary group, use sudo deluser username. Deleting an account does not remove its home folder."
+        },
+        {
+          "source": "ubuntu-user-management.pdf",
+          "text": "The guide shows sudo chown -R root:root /home/username/ and sudo mv /home/username /home/archived_users/ as possible follow-up actions."
+        }
+      ],
+      "expected_sources": ["ubuntu-user-management.pdf"],
+      "expected_chunk_ids": ["771189d9_0008_684dc373", "771189d9_0009_2f0d5fec"],
+      "category": "limitation",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_038",
+      "query": "What UID ranges does the Ubuntu guide use to distinguish system and regular users?",
+      "reference_answer": "Pre-installed system users generally use UIDs 0–99, dynamically created system users use 100–999, and regular users generally start at UID 1000 and conventionally end at 59999.",
+      "evidence": [
+        {
+          "source": "ubuntu-user-management.pdf",
+          "text": "The guide lists pre-installed system users as UID 0 to 99, dynamically created system users as 100 to 999, and regular users as starting at 1000 and conventionally ending at 59999."
+        }
+      ],
+      "expected_sources": ["ubuntu-user-management.pdf"],
+      "expected_chunk_ids": ["771189d9_0005_824fbbe8", "771189d9_0006_0b2efde1"],
+      "category": "concept",
+      "difficulty": "medium",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_039",
+      "query": "Why can a user with a locked password still log in through SSH?",
+      "reference_answer": "Locking a password does not disable an existing SSH public-key authentication path. Check and remove the user's `~/.ssh/authorized_keys` or `.ssh` directory, and check for established SSH connections.",
+      "evidence": [
+        {
+          "source": "ubuntu-user-management.pdf",
+          "text": "Disabling or locking a user password will not prevent remote login if the user has previously set up SSH public key authentication."
+        },
+        {
+          "source": "ubuntu-user-management.pdf",
+          "text": "Check the user's /home/username/.ssh/authorized_keys, remove or rename .ssh to prevent further SSH authentication, and check established SSH connections."
+        }
+      ],
+      "expected_sources": ["ubuntu-user-management.pdf"],
+      "expected_chunk_ids": ["771189d9_0010_4a3cda4c", "771189d9_0020_089424b7"],
+      "category": "troubleshooting",
+      "difficulty": "hard",
+      "review_status": "pending"
+    },
+    {
+      "id": "biz_040",
+      "query": "How can I restrict SSH login to a group of approved Ubuntu users?",
+      "reference_answer": "Create a group such as `sshlogin`, set `AllowGroups sshlogin` in `/etc/ssh/sshd_config`, add permitted users to the group, and restart SSH with `sudo systemctl restart ssh.service`.",
+      "evidence": [
+        {
+          "source": "ubuntu-user-management.pdf",
+          "text": "Create a group called sshlogin and set AllowGroups sshlogin in /etc/ssh/sshd_config. Add permitted users with sudo adduser username sshlogin and restart the SSH service with sudo systemctl restart ssh.service."
+        }
+      ],
+      "expected_sources": ["ubuntu-user-management.pdf"],
+      "expected_chunk_ids": ["771189d9_0021_3b6d6b84"],
+      "category": "configuration",
+      "difficulty": "medium",
+      "review_status": "pending"
+    }
+  ]
+}

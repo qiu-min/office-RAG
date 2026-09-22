@@ -14,7 +14,9 @@ from __future__ import annotations
 
 import hashlib
 import logging
+import os
 from pathlib import Path
+import tempfile
 from typing import Any, Dict, List, Optional
 
 try:
@@ -28,6 +30,20 @@ try:
     PYMUPDF_AVAILABLE = True
 except ImportError:
     PYMUPDF_AVAILABLE = False
+
+try:
+    import pdfplumber
+    PDFPLUMBER_AVAILABLE = True
+except ImportError:
+    pdfplumber = None
+    PDFPLUMBER_AVAILABLE = False
+
+try:
+    import pytesseract
+    TESSERACT_AVAILABLE = True
+except ImportError:
+    pytesseract = None
+    TESSERACT_AVAILABLE = False
 
 from PIL import Image
 import io
@@ -58,7 +74,10 @@ class PdfLoader(BaseLoader):
     def __init__(
         self,
         extract_images: bool = True,
-        image_storage_dir: str | Path = "data/images"
+        image_storage_dir: str | Path = "data/images",
+        ocr_enabled: bool = True,
+        ocr_language: str = "eng",
+        ocr_dpi: int = 200,
     ):
         """Initialize PDF Loader.
         
@@ -74,7 +93,21 @@ class PdfLoader(BaseLoader):
         
         self.extract_images = extract_images
         self.image_storage_dir = Path(image_storage_dir)
+        self.ocr_enabled = ocr_enabled
+        self.ocr_language = ocr_language
+        self.ocr_dpi = ocr_dpi
         self._markitdown = MarkItDown()
+
+        # MarkItDown/pdfminer can emit one DEBUG record for every PDF token
+        # when the ingestion CLI uses --verbose. Keep parser internals quiet;
+        # the pipeline's stage logs are the useful progress signal.
+        for noisy_logger in (
+            "pdfminer",
+            "pdfminer.psparser",
+            "pdfminer.pdfparser",
+            "pdfplumber",
+        ):
+            logging.getLogger(noisy_logger).setLevel(logging.WARNING)
     
     def load(self, file_path: str | Path) -> Document:
         """Load and parse a PDF file.
@@ -99,19 +132,52 @@ class PdfLoader(BaseLoader):
         doc_hash = self._compute_file_hash(path)
         doc_id = f"doc_{doc_hash[:16]}"
         
-        # Parse PDF with MarkItDown
+        # Detect whether the source PDF already contains a text layer. For
+        # image-only PDFs, create a temporary searchable PDF with OCR first,
+        # then pass that OCR output to MarkItDown as requested.
+        extraction_method = "markitdown"
+        text_layer = self._extract_text(path)
+        conversion_path = path
+
         try:
-            result = self._markitdown.convert(str(path))
-            text_content = result.text_content if hasattr(result, 'text_content') else str(result)
+            if not text_layer.strip() and self.ocr_enabled:
+                logger.info("No PDF text layer found; starting OCR for %s", path)
+                with tempfile.TemporaryDirectory(prefix="pdf_ocr_") as temp_dir:
+                    ocr_path = Path(temp_dir) / f"{path.stem}.ocr.pdf"
+                    self._create_ocr_pdf(path, ocr_path)
+                    logger.info("OCR completed; passing OCR PDF to MarkItDown")
+                    text_content = self._convert_with_markitdown(ocr_path)
+                    extraction_method = "ocr+markitdown"
+            else:
+                logger.info("PDF text layer found; passing source PDF to MarkItDown")
+                text_content = self._convert_with_markitdown(conversion_path)
+
+            # MarkItDown may return no text even when a text layer exists. In
+            # that case retry through OCR once, unless OCR was already used.
+            if not text_content.strip() and self.ocr_enabled and extraction_method == "markitdown":
+                logger.info("MarkItDown returned no text; retrying through OCR for %s", path)
+                with tempfile.TemporaryDirectory(prefix="pdf_ocr_") as temp_dir:
+                    ocr_path = Path(temp_dir) / f"{path.stem}.ocr.pdf"
+                    self._create_ocr_pdf(path, ocr_path)
+                    logger.info("OCR completed; passing OCR PDF to MarkItDown")
+                    text_content = self._convert_with_markitdown(ocr_path)
+                    extraction_method = "ocr+markitdown"
         except Exception as e:
             logger.error(f"Failed to parse PDF {path}: {e}")
             raise RuntimeError(f"PDF parsing failed: {e}") from e
+
+        if not text_content.strip():
+            raise RuntimeError(
+                f"No text was extracted from PDF: {path}. "
+                "The PDF may be image-only and OCR did not produce text."
+            )
         
         # Initialize metadata
         metadata: Dict[str, Any] = {
             "source_path": str(path),
             "doc_type": "pdf",
             "doc_hash": doc_hash,
+            "text_extraction": extraction_method,
         }
         
         # Extract title from first heading if available
@@ -137,6 +203,108 @@ class PdfLoader(BaseLoader):
             text=text_content,
             metadata=metadata
         )
+
+    def _extract_text(self, path: Path) -> str:
+        """Return the existing PDF text layer, if one is available.
+
+        This method is only used to decide whether OCR is needed. The final
+        Markdown conversion is still performed by MarkItDown.
+        """
+        # PyMuPDF is a lightweight text-layer check and avoids walking every
+        # token through pdfminer just to decide whether OCR is needed.
+        if PYMUPDF_AVAILABLE and fitz is not None:
+            pdf = fitz.open(str(path))
+            try:
+                page_text = [page.get_text("text").strip() for page in pdf]
+            finally:
+                pdf.close()
+            return "\n\n".join(text for text in page_text if text)
+
+        # Keep pdfplumber as a fallback for environments without PyMuPDF.
+        if PDFPLUMBER_AVAILABLE and pdfplumber is not None:
+            page_text = []
+            with pdfplumber.open(str(path)) as pdf:
+                for page in pdf.pages:
+                    text = page.extract_text() or ""
+                    if text.strip():
+                        page_text.append(text.strip())
+            return "\n\n".join(page_text)
+
+        return ""
+
+    def _convert_with_markitdown(self, path: Path) -> str:
+        """Convert a PDF to Markdown text with MarkItDown."""
+        result = self._markitdown.convert(str(path))
+        return result.text_content if hasattr(result, "text_content") else str(result)
+
+    def _create_ocr_pdf(self, pdf_path: Path, output_path: Path) -> Path:
+        """Create a searchable PDF by OCRing each page, then return its path.
+
+        Tesseract produces a PDF containing the original rendered page and a
+        searchable text layer. The output is temporary and is consumed by
+        MarkItDown; the source PDF is never overwritten.
+        """
+        if not TESSERACT_AVAILABLE or pytesseract is None:
+            raise RuntimeError(
+                "OCR requires the Python package 'pytesseract'. "
+                "Install it and the Tesseract OCR executable before ingesting "
+                "image-only PDFs."
+            )
+        if not PYMUPDF_AVAILABLE or fitz is None:
+            raise RuntimeError("OCR requires PyMuPDF to render PDF pages.")
+
+        tesseract_cmd = os.getenv("TESSERACT_CMD")
+        if tesseract_cmd:
+            pytesseract.pytesseract.tesseract_cmd = tesseract_cmd
+
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        source_doc = None
+        ocr_doc = None
+        try:
+            source_doc = fitz.open(str(pdf_path))
+            ocr_doc = fitz.open()
+
+            scale = self.ocr_dpi / 72.0
+            matrix = fitz.Matrix(scale, scale)
+
+            for page_number, page in enumerate(source_doc, start=1):
+                pixmap = page.get_pixmap(matrix=matrix, alpha=False)
+                image = Image.frombytes(
+                    "RGB",
+                    (pixmap.width, pixmap.height),
+                    pixmap.samples,
+                )
+
+                try:
+                    page_pdf_bytes = pytesseract.image_to_pdf_or_hocr(
+                        image,
+                        lang=self.ocr_language,
+                        extension="pdf",
+                    )
+                except Exception as exc:
+                    if isinstance(exc, getattr(pytesseract, "TesseractNotFoundError", ())):
+                        raise RuntimeError(
+                            "Tesseract executable was not found. Install Tesseract OCR "
+                            "and make sure it is available on PATH."
+                        ) from exc
+                    raise RuntimeError(
+                        f"OCR failed on page {page_number} of {pdf_path}: {exc}"
+                    ) from exc
+
+                page_doc = fitz.open(stream=page_pdf_bytes, filetype="pdf")
+                try:
+                    ocr_doc.insert_pdf(page_doc)
+                finally:
+                    page_doc.close()
+
+            ocr_doc.save(str(output_path), garbage=4, deflate=True)
+            logger.info("Created OCR PDF %s from %s", output_path, pdf_path)
+            return output_path
+        finally:
+            if ocr_doc is not None:
+                ocr_doc.close()
+            if source_doc is not None:
+                source_doc.close()
     
     def _compute_file_hash(self, file_path: Path) -> str:
         """Compute SHA256 hash of file content.
@@ -215,9 +383,6 @@ class PdfLoader(BaseLoader):
             
             # Open PDF with PyMuPDF
             doc = fitz.open(pdf_path)
-            
-            # Track text offset for placeholder insertion
-            text_offset = 0
             
             for page_num in range(len(doc)):
                 page = doc[page_num]

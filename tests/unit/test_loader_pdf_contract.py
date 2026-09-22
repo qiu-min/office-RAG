@@ -16,7 +16,7 @@ import pytest
 
 from src.core.types import Document
 from src.libs.loader.base_loader import BaseLoader
-from src.libs.loader.pdf_loader import PdfLoader
+from src.libs.loader.pdf_loader import PDFPLUMBER_AVAILABLE, PdfLoader
 
 
 # Test fixtures paths
@@ -72,10 +72,12 @@ class TestPdfLoaderInitialization:
         assert loader.extract_images is False
         assert loader.image_storage_dir == Path("custom/path")
     
-    def test_markitdown_available(self):
-        """PdfLoader requires MarkItDown to be available."""
+    def test_pdf_text_parser_available(self):
+        """PdfLoader has a text parser available."""
+        assert PDFPLUMBER_AVAILABLE
+
         loader = PdfLoader()
-        assert loader._markitdown is not None
+        assert loader._extract_text is not None
 
 
 class TestPdfLoaderValidation:

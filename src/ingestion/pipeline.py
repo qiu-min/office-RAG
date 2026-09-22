@@ -273,7 +273,7 @@ class IngestionPipeline:
             }
             if trace is not None:
                 trace.record_stage("load", {
-                    "method": "markitdown",
+                    "method": document.metadata.get("text_extraction", "markitdown"),
                     "doc_id": document.id,
                     "text_length": len(document.text),
                     "image_count": image_count,
