@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sqlite3
 import sys
 from collections import Counter
@@ -58,6 +59,32 @@ class ValidationResult:
 
 def _non_empty_string(value: Any) -> bool:
     return isinstance(value, str) and bool(value.strip())
+
+
+def _split_evidence_sentences(text: str) -> list[str]:
+    """Split evidence at sentence-ending punctuation without normalizing it."""
+
+    parts = re.split(r"(?<=[.!?。！？])", text)
+    return [part.strip() for part in parts if part.strip()]
+
+
+def _evidence_supported_by_chunks(
+    evidence_text: str,
+    candidate_texts: list[str],
+) -> bool:
+    """Check exact evidence support, with a sentence-level cross-chunk fallback."""
+
+    if any(evidence_text in chunk_text for chunk_text in candidate_texts):
+        return True
+
+    sentences = _split_evidence_sentences(evidence_text)
+    if len(sentences) <= 1:
+        return False
+
+    return all(
+        any(sentence in chunk_text for chunk_text in candidate_texts)
+        for sentence in sentences
+    )
 
 
 def _source_name(value: Any) -> str:
@@ -295,6 +322,42 @@ def _validate_case(
                     "which is not in expected_sources"
                 )
                 case_valid = False
+
+        # An unresolved case may intentionally have no reliable chunk mapping.
+        # Once expected chunks are supplied, evidence must be traceable to them.
+        if expected_chunk_ids:
+            for evidence_index, item in enumerate(evidence):
+                if not isinstance(item, dict):
+                    continue
+                evidence_source = item.get("source")
+                evidence_text = item.get("text")
+                if not _non_empty_string(evidence_source) or not _non_empty_string(evidence_text):
+                    continue
+
+                candidate_texts = []
+                for chunk_id in expected_chunk_ids:
+                    if not _non_empty_string(chunk_id):
+                        continue
+                    metadata = chunk_metadata.get(chunk_id)
+                    if metadata is None:
+                        continue
+                    chunk_source = metadata.get("source") or _source_name(
+                        metadata.get("source_path")
+                    )
+                    if chunk_source != evidence_source:
+                        continue
+                    chunk_text = metadata.get("text")
+                    if isinstance(chunk_text, str):
+                        candidate_texts.append(chunk_text)
+
+                if not _evidence_supported_by_chunks(evidence_text, candidate_texts):
+                    evidence_label = f"{case_id or prefix}.evidence[{evidence_index}]"
+                    result.errors.append(
+                        f"{evidence_label}: evidence is not supported by expected_chunk_ids "
+                        f"for source '{evidence_source}' "
+                        f"(expected_chunk_ids: {', '.join(expected_chunk_ids)})"
+                    )
+                    case_valid = False
 
     return case_valid
 

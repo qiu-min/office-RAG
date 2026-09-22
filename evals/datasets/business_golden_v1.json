@@ -18,7 +18,7 @@
       "expected_chunk_ids": ["57d10e59_0001_004baebb"],
       "category": "feature",
       "difficulty": "easy",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_002",
@@ -34,7 +34,7 @@
       "expected_chunk_ids": ["57d10e59_0003_1e3e4660"],
       "category": "limitation",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_003",
@@ -50,7 +50,7 @@
       "expected_chunk_ids": ["57d10e59_0006_833a1873"],
       "category": "configuration",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_004",
@@ -66,7 +66,7 @@
       "expected_chunk_ids": ["57d10e59_0010_cf2baea1", "57d10e59_0014_8c240b82"],
       "category": "cross_section",
       "difficulty": "hard",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_005",
@@ -82,7 +82,7 @@
       "expected_chunk_ids": ["9615636f_0009_b0f6b781"],
       "category": "procedure",
       "difficulty": "easy",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_006",
@@ -102,7 +102,7 @@
       "expected_chunk_ids": ["9615636f_0011_a87438b5", "9615636f_0013_4c9dd91f"],
       "category": "troubleshooting",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_007",
@@ -118,7 +118,7 @@
       "expected_chunk_ids": ["9615636f_0015_d63aeca0", "9615636f_0016_c319599e"],
       "category": "comparison",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_008",
@@ -135,10 +135,10 @@
         }
       ],
       "expected_sources": ["docker-compose-start.pdf"],
-      "expected_chunk_ids": ["9615636f_0019_5bca7994", "9615636f_0021_f0b0ae0a"],
+      "expected_chunk_ids": ["9615636f_0018_f6daebac", "9615636f_0020_24906331", "9615636f_0021_f0b0ae0a"],
       "category": "limitation",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_009",
@@ -154,7 +154,7 @@
       "expected_chunk_ids": ["4acb23a5_0001_7f8593c4", "4acb23a5_0002_6d8e8409"],
       "category": "limitation",
       "difficulty": "easy",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_010",
@@ -170,7 +170,7 @@
       "expected_chunk_ids": ["4acb23a5_0001_7f8593c4"],
       "category": "limitation",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_011",
@@ -194,7 +194,7 @@
       "expected_chunk_ids": ["4acb23a5_0005_7bfc3174", "4acb23a5_0006_106680e0", "4acb23a5_0009_ae291496", "4acb23a5_0010_b8067e9c"],
       "category": "cross_section",
       "difficulty": "hard",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_012",
@@ -214,7 +214,7 @@
       "expected_chunk_ids": ["4acb23a5_0016_c42be69e", "4acb23a5_0017_899f2a71"],
       "category": "limitation",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_013",
@@ -230,7 +230,7 @@
       "expected_chunk_ids": ["d8bbe4e7_0000_7c6c1d90", "d8bbe4e7_0001_1eaa3115"],
       "category": "configuration",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_014",
@@ -246,7 +246,7 @@
       "expected_chunk_ids": ["d8bbe4e7_0002_8fde959a"],
       "category": "procedure",
       "difficulty": "easy",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_015",
@@ -266,7 +266,7 @@
       "expected_chunk_ids": ["e80edc3b_0000_e0b0b7f5", "e80edc3b_0001_f5724b85"],
       "category": "configuration",
       "difficulty": "easy",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_016",
@@ -282,7 +282,7 @@
       "expected_chunk_ids": ["e80edc3b_0002_53fae882", "e80edc3b_0003_27dc7515"],
       "category": "limitation",
       "difficulty": "easy",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_017",
@@ -298,7 +298,7 @@
       "expected_chunk_ids": ["e80edc3b_0003_27dc7515", "e80edc3b_0004_c0f6d988"],
       "category": "configuration",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_018",
@@ -318,7 +318,7 @@
       "expected_chunk_ids": ["e80edc3b_0005_69b30b57", "e80edc3b_0006_1ee6fff2", "e80edc3b_0007_b348ea5e"],
       "category": "feature",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_019",
@@ -338,7 +338,7 @@
       "expected_chunk_ids": ["e80edc3b_0008_92d765bf", "e80edc3b_0009_e48e92e1", "e80edc3b_0010_670ed050", "e80edc3b_0012_ffcb23ba", "e80edc3b_0013_7118b4a6"],
       "category": "cross_section",
       "difficulty": "hard",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_020",
@@ -358,7 +358,7 @@
       "expected_chunk_ids": ["e80edc3b_0035_8bf63cb2", "e80edc3b_0036_15bf8964", "e80edc3b_0037_57350b2d", "e80edc3b_0039_08619ecb"],
       "category": "concept",
       "difficulty": "hard",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_021",
@@ -374,7 +374,7 @@
       "expected_chunk_ids": ["cfc18307_0017_f148bbf5"],
       "category": "concept",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_022",
@@ -394,7 +394,7 @@
       "expected_chunk_ids": ["cfc18307_0023_3b3cd2cf", "cfc18307_0024_07cc561d", "cfc18307_0025_f3342298", "cfc18307_0028_dd1271c5", "cfc18307_0029_2887e0a0"],
       "category": "procedure",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_023",
@@ -410,7 +410,7 @@
       "expected_chunk_ids": ["cfc18307_0024_07cc561d", "cfc18307_0025_f3342298", "cfc18307_0042_2f8ca40c"],
       "category": "concept",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_024",
@@ -430,7 +430,7 @@
       "expected_chunk_ids": ["cfc18307_0030_6b749d37", "cfc18307_0031_457bbbaa"],
       "category": "troubleshooting",
       "difficulty": "easy",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_025",
@@ -450,7 +450,7 @@
       "expected_chunk_ids": ["cfc18307_0032_1576965b", "cfc18307_0036_b2fae41e", "cfc18307_0037_fada72d9"],
       "category": "procedure",
       "difficulty": "hard",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_026",
@@ -470,7 +470,7 @@
       "expected_chunk_ids": ["cfc18307_0039_07327e9e", "cfc18307_0040_d5aded3b", "cfc18307_0042_2f8ca40c", "cfc18307_0043_d6633e28", "cfc18307_0044_304dda2d"],
       "category": "cross_section",
       "difficulty": "hard",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_027",
@@ -486,7 +486,7 @@
       "expected_chunk_ids": ["f4661936_0001_af62613c"],
       "category": "configuration",
       "difficulty": "easy",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_028",
@@ -502,7 +502,7 @@
       "expected_chunk_ids": ["f4661936_0001_af62613c", "f4661936_0002_64210cb6"],
       "category": "procedure",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_029",
@@ -522,7 +522,7 @@
       "expected_chunk_ids": ["f4661936_0003_01ff1e80", "f4661936_0004_e15cd5b8"],
       "category": "configuration",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_030",
@@ -542,7 +542,7 @@
       "expected_chunk_ids": ["f4661936_0020_ac37203f", "f4661936_0021_3d1eb27e"],
       "category": "troubleshooting",
       "difficulty": "hard",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_031",
@@ -562,7 +562,7 @@
       "expected_chunk_ids": ["fcd64d72_0000_8c469979", "fcd64d72_0001_c96c92d6", "fcd64d72_0002_c12a6592"],
       "category": "feature",
       "difficulty": "easy",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_032",
@@ -578,7 +578,7 @@
       "expected_chunk_ids": ["fcd64d72_0002_c12a6592"],
       "category": "limitation",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_033",
@@ -594,7 +594,7 @@
       "expected_chunk_ids": ["fcd64d72_0008_210f7b59"],
       "category": "comparison",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_034",
@@ -614,7 +614,7 @@
       "expected_chunk_ids": ["fcd64d72_0012_d8842b87", "fcd64d72_0013_bce50858", "fcd64d72_0014_691da3b8"],
       "category": "limitation",
       "difficulty": "hard",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_035",
@@ -634,7 +634,7 @@
       "expected_chunk_ids": ["771189d9_0000_fca52ff5", "771189d9_0001_90fff5fb"],
       "category": "concept",
       "difficulty": "easy",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_036",
@@ -650,7 +650,7 @@
       "expected_chunk_ids": ["771189d9_0003_dca1a745"],
       "category": "procedure",
       "difficulty": "easy",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_037",
@@ -670,7 +670,7 @@
       "expected_chunk_ids": ["771189d9_0008_684dc373", "771189d9_0009_2f0d5fec"],
       "category": "limitation",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_038",
@@ -686,7 +686,7 @@
       "expected_chunk_ids": ["771189d9_0005_824fbbe8", "771189d9_0006_0b2efde1"],
       "category": "concept",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_039",
@@ -706,7 +706,7 @@
       "expected_chunk_ids": ["771189d9_0010_4a3cda4c", "771189d9_0020_089424b7"],
       "category": "troubleshooting",
       "difficulty": "hard",
-      "review_status": "pending"
+      "review_status": "reviewed"
     },
     {
       "id": "biz_040",
@@ -722,7 +722,7 @@
       "expected_chunk_ids": ["771189d9_0021_3b6d6b84"],
       "category": "configuration",
       "difficulty": "medium",
-      "review_status": "pending"
+      "review_status": "reviewed"
     }
   ]
 }

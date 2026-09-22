@@ -37,14 +37,14 @@ def _chunk_metadata() -> dict:
     return {"chunk-a": {"source": "doc.pdf", "text": "sudo ufw enable"}}
 
 
-def _validate(tmp_path: Path, data: dict):
+def _validate(tmp_path: Path, data: dict, chunk_metadata: dict | None = None):
     source_root = tmp_path / "sources"
     source_root.mkdir(exist_ok=True)
     (source_root / "doc.pdf").write_bytes(b"fixture")
     return validate_dataset(
         data,
         dataset_path=tmp_path / "dataset.json",
-        chunk_metadata=_chunk_metadata(),
+        chunk_metadata=chunk_metadata or _chunk_metadata(),
     )
 
 
@@ -52,6 +52,52 @@ def test_valid_golden_set(tmp_path: Path) -> None:
     result = _validate(tmp_path, _dataset(_case()))
     assert result.is_valid
     assert result.valid_cases == 1
+
+
+def test_evidence_fully_exists_in_expected_chunk(tmp_path: Path) -> None:
+    result = _validate(tmp_path, _dataset(_case()))
+    assert result.is_valid
+
+
+def test_evidence_missing_from_expected_chunks_fails(tmp_path: Path) -> None:
+    result = _validate(
+        tmp_path,
+        _dataset(_case(evidence=[{"source": "doc.pdf", "text": "not present"}])),
+    )
+    assert not result.is_valid
+    assert any(
+        "biz_001.evidence[0]" in error and "doc.pdf" in error
+        for error in result.errors
+    )
+
+
+def test_evidence_can_span_two_expected_chunks(tmp_path: Path) -> None:
+    metadata = {
+        "chunk-a": {"source": "doc.pdf", "text": "Sentence A."},
+        "chunk-b": {"source": "doc.pdf", "text": "Sentence B."},
+    }
+    case = _case(
+        evidence=[{"source": "doc.pdf", "text": "Sentence A. Sentence B."}],
+        expected_chunk_ids=["chunk-a", "chunk-b"],
+    )
+    result = _validate(tmp_path, _dataset(case), metadata)
+    assert result.is_valid
+
+
+def test_evidence_only_in_wrong_source_chunk_fails(tmp_path: Path) -> None:
+    metadata = {"chunk-a": {"source": "other.pdf", "text": "sudo ufw enable"}}
+    result = _validate(tmp_path, _dataset(_case()), metadata)
+    assert not result.is_valid
+    assert any("evidence[0]" in error and "doc.pdf" in error for error in result.errors)
+
+
+def test_evidence_character_difference_fails_without_normalization(tmp_path: Path) -> None:
+    result = _validate(
+        tmp_path,
+        _dataset(_case(evidence=[{"source": "doc.pdf", "text": "sudo  ufw enable"}])),
+    )
+    assert not result.is_valid
+    assert any("evidence[0]" in error for error in result.errors)
 
 
 def test_duplicate_id_is_invalid() -> None:
