@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import tempfile
 from pathlib import Path
+from types import SimpleNamespace
 from typing import Any, Dict, List, Optional
 from unittest.mock import MagicMock
 
@@ -37,6 +38,11 @@ class StubEvaluator(BaseEvaluator):
         **kwargs: Any,
     ) -> Dict[str, float]:
         return {"hit_rate": 1.0, "mrr": 0.5}
+
+
+class FailingEvaluator(BaseEvaluator):
+    def evaluate(self, *args: Any, **kwargs: Any) -> Dict[str, float]:
+        raise ValueError("evaluator exploded")
 
 
 def _write_golden_json(path: Path, test_cases: List[Dict]) -> None:
@@ -249,7 +255,10 @@ class TestEvalRunner:
         f = tmp_path / "g.json"
         _write_golden_json(f, [{"query": "Q", "expected_chunk_ids": ["c1"]}])
         mock_search = MagicMock()
-        mock_search.search.return_value = []
+        mock_search.search.return_value = SimpleNamespace(
+            used_fallback=False,
+            results=[],
+        )
         evaluator = CustomEvaluator(metrics=["hit_rate@1", "recall@1", "mrr"])
 
         runner = EvalRunner(hybrid_search=mock_search, evaluator=evaluator)
@@ -261,6 +270,105 @@ class TestEvalRunner:
             "recall@1": 0.0,
             "mrr": 0.0,
         }
+
+    def test_non_strict_evaluator_exception_keeps_legacy_behavior(self, tmp_path: Path) -> None:
+        f = tmp_path / "g.json"
+        _write_golden_json(f, [{"query": "Q"}])
+
+        report = EvalRunner(evaluator=FailingEvaluator()).run(f)
+
+        assert report.query_results[0].metrics == {}
+
+    def test_strict_evaluator_exception_is_raised(self, tmp_path: Path) -> None:
+        f = tmp_path / "g.json"
+        _write_golden_json(f, [{"query": "Q"}])
+
+        with pytest.raises(RuntimeError, match="Evaluation failed"):
+            EvalRunner(evaluator=FailingEvaluator()).run(
+                f, strict_evaluation=True
+            )
+
+    def test_strict_retrieval_rejects_hybrid_fallback(self, tmp_path: Path) -> None:
+        f = tmp_path / "g.json"
+        _write_golden_json(f, [{"query": "Q"}])
+        mock_search = MagicMock()
+        mock_search.search.return_value = SimpleNamespace(
+            used_fallback=True,
+            dense_error="dense failed",
+            sparse_error="sparse failed",
+            results=[],
+        )
+
+        with pytest.raises(RuntimeError, match="HybridSearch fallback"):
+            EvalRunner(hybrid_search=mock_search, evaluator=StubEvaluator()).run(
+                f, retrieval_only=True, strict_retrieval=True
+            )
+        mock_search.search.assert_called_once_with(
+            query="Q", top_k=10, return_details=True
+        )
+
+    def test_strict_retrieval_uses_details_results_without_fallback(
+        self, tmp_path: Path
+    ) -> None:
+        f = tmp_path / "g.json"
+        _write_golden_json(f, [{"query": "Q"}])
+        mock_search = MagicMock()
+        mock_search.search.return_value = SimpleNamespace(
+            used_fallback=False,
+            results=[MagicMock(chunk_id="c1")],
+        )
+
+        report = EvalRunner(
+            hybrid_search=mock_search,
+            evaluator=StubEvaluator(),
+        ).run(f, retrieval_only=True, strict_retrieval=True)
+
+        assert report.query_results[0].retrieved_chunk_ids == ["c1"]
+
+    def test_strict_retrieval_rejects_reranker_fallback(self, tmp_path: Path) -> None:
+        f = tmp_path / "g.json"
+        _write_golden_json(f, [{"query": "Q"}])
+        mock_search = MagicMock()
+        mock_search.search.return_value = SimpleNamespace(
+            used_fallback=False,
+            results=[MagicMock(chunk_id="c1")],
+        )
+        reranker = MagicMock(is_enabled=True)
+        reranker.rerank.return_value = SimpleNamespace(
+            used_fallback=True,
+            reranker_type="cross_encoder",
+            fallback_reason="model failed",
+            results=[MagicMock(chunk_id="c1")],
+        )
+
+        with pytest.raises(RuntimeError, match="Reranker fallback"):
+            EvalRunner(
+                hybrid_search=mock_search,
+                evaluator=StubEvaluator(),
+                reranker=reranker,
+            ).run(f, retrieval_only=True, strict_retrieval=True)
+
+    def test_non_strict_reranker_fallback_remains_compatible(self, tmp_path: Path) -> None:
+        f = tmp_path / "g.json"
+        _write_golden_json(f, [{"query": "Q"}])
+        mock_search = MagicMock()
+        original = MagicMock(chunk_id="c1")
+        mock_search.search.return_value = [original]
+        reranker = MagicMock(is_enabled=True)
+        reranker.rerank.return_value = SimpleNamespace(
+            used_fallback=True,
+            reranker_type="cross_encoder",
+            fallback_reason="model failed",
+            results=[original],
+        )
+
+        report = EvalRunner(
+            hybrid_search=mock_search,
+            evaluator=StubEvaluator(),
+            reranker=reranker,
+        ).run(f, retrieval_only=True)
+
+        assert report.query_results[0].retrieved_chunk_ids == ["c1"]
 
 
 class TestEvalRunnerAggregation:

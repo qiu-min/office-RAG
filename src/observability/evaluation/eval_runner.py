@@ -223,6 +223,7 @@ class EvalRunner:
         retrieval_only: bool = False,
         reviewed_only: bool = False,
         strict_retrieval: bool = False,
+        strict_evaluation: bool = False,
     ) -> EvalReport:
         """Run evaluation on the golden test set.
 
@@ -235,6 +236,8 @@ class EvalRunner:
                 preserve compatibility with fixtures that have no review metadata.
             strict_retrieval: Raise on missing or failed retrieval instead of
                 converting the failure into an empty result.
+            strict_evaluation: Raise on evaluator failures instead of omitting
+                the case metrics from aggregation.
 
         Returns:
             EvalReport with per-query and aggregate metrics.
@@ -278,6 +281,7 @@ class EvalRunner:
                 answer_override=answer_override,
                 retrieval_only=retrieval_only,
                 strict_retrieval=strict_retrieval,
+                strict_evaluation=strict_evaluation,
             )
             report.query_results.append(qr)
 
@@ -300,6 +304,7 @@ class EvalRunner:
         answer_override: Optional[str] = None,
         retrieval_only: bool = False,
         strict_retrieval: bool = False,
+        strict_evaluation: bool = False,
     ) -> QueryResult:
         """Evaluate a single test case.
 
@@ -361,6 +366,10 @@ class EvalRunner:
             )
             qr.metrics = metrics
         except Exception as exc:
+            if strict_evaluation:
+                raise RuntimeError(
+                    f"Evaluation failed for '{test_case.query[:40]}': {exc}"
+                ) from exc
             logger.warning("Evaluation failed for '%s': %s", test_case.query[:40], exc)
             qr.metrics = {}
 
@@ -389,15 +398,40 @@ class EvalRunner:
             has_reranker = self.reranker is not None and getattr(self.reranker, 'is_enabled', False)
             initial_top_k = top_k * 2 if has_reranker else top_k
 
-            results = self.hybrid_search.search(
-                query=query,
-                top_k=initial_top_k,
-            )
-            results = results if isinstance(results, list) else results.results
-
+            if strict:
+                search_result = self.hybrid_search.search(
+                    query=query,
+                    top_k=initial_top_k,
+                    return_details=True,
+                )
+                if getattr(search_result, "used_fallback", False):
+                    raise RuntimeError(
+                        "HybridSearch fallback occurred during strict retrieval baseline: "
+                        f"query='{query}' "
+                        f"dense_error='{getattr(search_result, 'dense_error', None)}' "
+                        f"sparse_error='{getattr(search_result, 'sparse_error', None)}'"
+                    )
+                if not hasattr(search_result, "results"):
+                    raise RuntimeError(
+                        "Strict retrieval baseline expected HybridSearch details"
+                    )
+                results = search_result.results
+            else:
+                results = self.hybrid_search.search(
+                    query=query,
+                    top_k=initial_top_k,
+                )
+                results = results if isinstance(results, list) else results.results
             # Apply reranking if enabled
             if has_reranker and results:
                 rerank_result = self.reranker.rerank(query=query, results=results, top_k=top_k)
+                if strict and getattr(rerank_result, "used_fallback", False):
+                    raise RuntimeError(
+                        "Reranker fallback occurred during strict retrieval baseline: "
+                        f"query='{query}' "
+                        f"reranker='{getattr(rerank_result, 'reranker_type', 'unknown')}' "
+                        f"reason='{getattr(rerank_result, 'fallback_reason', None)}'"
+                    )
                 results = rerank_result.results
 
             return results

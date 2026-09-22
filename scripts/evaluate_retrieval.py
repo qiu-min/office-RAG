@@ -133,6 +133,7 @@ def _build_report(
     args: argparse.Namespace,
     reranker: Any,
 ) -> dict[str, Any]:
+    _validate_metrics_complete(report, args.ks)
     report_dict = report.to_dict()
     reranker_enabled = bool(getattr(reranker, "is_enabled", False))
     metric_names = _metric_names(args.ks)
@@ -145,7 +146,7 @@ def _build_report(
         "ks": list(args.ks),
         "query_count": len(report.query_results),
         "aggregate_metrics": {
-            name: round(float(report.aggregate_metrics.get(name, 0.0)), 4)
+            name: round(float(report.aggregate_metrics[name]), 4)
             for name in metric_names
         },
         "query_results": report_dict["query_results"],
@@ -158,6 +159,26 @@ def _build_report(
             "reranker_type": getattr(reranker, "reranker_type", "none"),
         },
     }
+
+
+def _validate_metrics_complete(report: Any, ks: Sequence[int]) -> None:
+    """Reject partial baseline results before the report can be written."""
+    expected_metrics = _metric_names(ks)
+    for query_result in report.query_results:
+        missing = [name for name in expected_metrics if name not in query_result.metrics]
+        if missing:
+            raise RuntimeError(
+                f"Incomplete retrieval metrics for case '{query_result.case_id}': "
+                f"query='{query_result.query}' missing={missing}"
+            )
+
+    missing_aggregate = [
+        name for name in expected_metrics if name not in report.aggregate_metrics
+    ]
+    if missing_aggregate:
+        raise RuntimeError(
+            f"Incomplete aggregate retrieval metrics: missing={missing_aggregate}"
+        )
 
 
 def _write_report_atomic(path: Path, report: dict[str, Any]) -> None:
@@ -225,6 +246,7 @@ def main(argv: Sequence[str] | None = None) -> int:
             retrieval_only=True,
             reviewed_only=True,
             strict_retrieval=True,
+            strict_evaluation=True,
         )
         output_report = _build_report(evaluation, args, reranker)
         _write_report_atomic(Path(args.output), output_report)
