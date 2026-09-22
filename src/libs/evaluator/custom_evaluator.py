@@ -6,19 +6,21 @@ It is designed for fast regression checks and sanity validation.
 
 from __future__ import annotations
 
+import re
 from typing import Any, Dict, Iterable, List, Optional, Sequence
 
 from src.libs.evaluator.base_evaluator import BaseEvaluator
 
 
 class CustomEvaluator(BaseEvaluator):
-    """Custom evaluator for lightweight metrics (hit_rate, mrr).
+    """Custom evaluator for lightweight retrieval metrics.
 
     The evaluator expects retrieved chunks to contain an identifier field.
     Supported id fields: id, chunk_id, document_id, doc_id.
     """
 
     SUPPORTED_METRICS = {"hit_rate", "mrr"}
+    _RANKED_METRIC_PATTERN = re.compile(r"^(hit_rate|recall)@(\d+)$")
     _ID_FIELDS = ("id", "chunk_id", "document_id", "doc_id")
 
     def __init__(
@@ -37,11 +39,11 @@ class CustomEvaluator(BaseEvaluator):
         if not normalized:
             normalized = ["hit_rate", "mrr"]
 
-        unsupported = [metric for metric in normalized if metric not in self.SUPPORTED_METRICS]
+        unsupported = [metric for metric in normalized if not self._is_supported_metric(metric)]
         if unsupported:
             raise ValueError(
                 "Unsupported custom metrics: "
-                f"{', '.join(unsupported)}. Supported: {', '.join(sorted(self.SUPPORTED_METRICS))}"
+                f"{', '.join(unsupported)}. Supported: hit_rate, hit_rate@K, recall@K, mrr"
             )
 
         self.metrics = normalized
@@ -69,17 +71,34 @@ class CustomEvaluator(BaseEvaluator):
             Dictionary of metric name to float value.
         """
         self.validate_query(query)
-        self.validate_retrieved_chunks(retrieved_chunks)
+        # Keep the historical validation contract for direct callers.  The
+        # retrieval-only runner opts into empty results so a legitimate query
+        # miss is scored as zero instead of being confused with an evaluator
+        # input error.
+        if not (not retrieved_chunks and kwargs.get("allow_empty_retrieval", False)):
+            self.validate_retrieved_chunks(retrieved_chunks)
 
         retrieved_ids = self._extract_ids(retrieved_chunks, label="retrieved_chunks")
         ground_truth_ids = self._extract_ground_truth_ids(ground_truth)
 
         results: Dict[str, float] = {}
 
-        if "hit_rate" in self.metrics:
-            results["hit_rate"] = self._compute_hit_rate(retrieved_ids, ground_truth_ids)
-        if "mrr" in self.metrics:
-            results["mrr"] = self._compute_mrr(retrieved_ids, ground_truth_ids)
+        for metric in self.metrics:
+            if metric == "hit_rate":
+                results[metric] = self._compute_hit_rate(retrieved_ids, ground_truth_ids)
+            elif metric == "mrr":
+                results[metric] = self._compute_mrr(retrieved_ids, ground_truth_ids)
+            else:
+                metric_name, raw_k = metric.rsplit("@", 1)
+                k = int(raw_k)
+                if metric_name == "hit_rate":
+                    results[metric] = self._compute_hit_rate(
+                        retrieved_ids[:k], ground_truth_ids
+                    )
+                else:
+                    results[metric] = self._compute_recall(
+                        retrieved_ids[:k], ground_truth_ids
+                    )
 
         return results
 
@@ -91,6 +110,14 @@ class CustomEvaluator(BaseEvaluator):
         if metrics is None:
             return []
         return [str(metric) for metric in metrics]
+
+    @classmethod
+    def _is_supported_metric(cls, metric: str) -> bool:
+        """Return whether *metric* is supported, including a valid @K form."""
+        if metric in cls.SUPPORTED_METRICS:
+            return True
+        match = cls._RANKED_METRIC_PATTERN.fullmatch(metric)
+        return bool(match and int(match.group(2)) > 0)
 
     def _extract_ground_truth_ids(self, ground_truth: Optional[Any]) -> List[str]:
         """Extract ground truth ids from various input shapes."""
@@ -144,6 +171,16 @@ class CustomEvaluator(BaseEvaluator):
         if not ground_truth_ids:
             return 0.0
         return 1.0 if any(item in ground_truth_ids for item in retrieved_ids) else 0.0
+
+    def _compute_recall(
+        self,
+        retrieved_ids: Sequence[str],
+        ground_truth_ids: Sequence[str],
+    ) -> float:
+        """Compute unique relevant-id recall for a ranked prefix."""
+        if not ground_truth_ids:
+            return 0.0
+        return len(set(retrieved_ids).intersection(ground_truth_ids)) / len(set(ground_truth_ids))
 
     def _compute_mrr(self, retrieved_ids: Sequence[str], ground_truth_ids: Sequence[str]) -> float:
         """Compute Mean Reciprocal Rank (MRR)."""

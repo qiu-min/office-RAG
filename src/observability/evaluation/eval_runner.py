@@ -33,12 +33,20 @@ class GoldenTestCase:
         expected_chunk_ids: Ground-truth chunk IDs for IR metrics.
         expected_sources: Ground-truth source file names (optional).
         reference_answer: Reference answer text for LLM-as-Judge (optional).
+        id: Stable test case identifier (optional for legacy fixtures).
+        category: Business category (optional).
+        difficulty: Business difficulty (optional).
+        review_status: Golden-set review state (optional for legacy fixtures).
     """
 
     query: str
     expected_chunk_ids: List[str] = field(default_factory=list)
     expected_sources: List[str] = field(default_factory=list)
     reference_answer: Optional[str] = None
+    id: Optional[str] = None
+    category: Optional[str] = None
+    difficulty: Optional[str] = None
+    review_status: Optional[str] = None
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> GoldenTestCase:
@@ -47,6 +55,10 @@ class GoldenTestCase:
             expected_chunk_ids=data.get("expected_chunk_ids", []),
             expected_sources=data.get("expected_sources", []),
             reference_answer=data.get("reference_answer"),
+            id=data.get("id"),
+            category=data.get("category"),
+            difficulty=data.get("difficulty"),
+            review_status=data.get("review_status"),
         )
 
 
@@ -57,16 +69,26 @@ class QueryResult:
     Attributes:
         query: The test query.
         retrieved_chunk_ids: IDs of chunks actually retrieved.
+        case_id: Stable test case identifier when supplied by the fixture.
+        expected_chunk_ids: Ground-truth chunk IDs used for retrieval metrics.
+        category: Optional business category.
+        difficulty: Optional business difficulty.
         generated_answer: The generated answer (if applicable).
         metrics: Evaluation metrics for this query.
         elapsed_ms: Time taken for retrieval + evaluation.
     """
 
+    # Keep the original positional field order for compatibility with callers
+    # that construct QueryResult(query, retrieved_ids, answer, metrics, ms).
     query: str
     retrieved_chunk_ids: List[str] = field(default_factory=list)
     generated_answer: Optional[str] = None
     metrics: Dict[str, float] = field(default_factory=dict)
     elapsed_ms: float = 0.0
+    case_id: Optional[str] = None
+    expected_chunk_ids: List[str] = field(default_factory=list)
+    category: Optional[str] = None
+    difficulty: Optional[str] = None
 
 
 @dataclass
@@ -100,7 +122,11 @@ class EvalReport:
             "query_results": [
                 {
                     "query": qr.query,
+                    "case_id": qr.case_id,
+                    "expected_chunk_ids": qr.expected_chunk_ids,
                     "retrieved_chunk_ids": qr.retrieved_chunk_ids,
+                    "category": qr.category,
+                    "difficulty": qr.difficulty,
                     "generated_answer": qr.generated_answer,
                     "metrics": {k: round(v, 4) for k, v in qr.metrics.items()},
                     "elapsed_ms": round(qr.elapsed_ms, 1),
@@ -194,6 +220,9 @@ class EvalRunner:
         test_set_path: str | Path,
         top_k: int = 10,
         collection: Optional[str] = None,
+        retrieval_only: bool = False,
+        reviewed_only: bool = False,
+        strict_retrieval: bool = False,
     ) -> EvalReport:
         """Run evaluation on the golden test set.
 
@@ -201,6 +230,11 @@ class EvalRunner:
             test_set_path: Path to golden_test_set.json.
             top_k: Number of chunks to retrieve per query.
             collection: Optional collection name filter.
+            retrieval_only: Skip answer generation and evaluate retrieved chunks only.
+            reviewed_only: Evaluate reviewed cases when review metadata is present;
+                preserve compatibility with fixtures that have no review metadata.
+            strict_retrieval: Raise on missing or failed retrieval instead of
+                converting the failure into an empty result.
 
         Returns:
             EvalReport with per-query and aggregate metrics.
@@ -213,7 +247,13 @@ class EvalRunner:
             raise ValueError("EvalRunner requires an evaluator.")
 
         test_cases = load_test_set(test_set_path)
+        if reviewed_only:
+            has_review_status = any(tc.review_status is not None for tc in test_cases)
+            if has_review_status:
+                test_cases = [tc for tc in test_cases if tc.review_status == "reviewed"]
         if not test_cases:
+            if reviewed_only:
+                raise ValueError("Golden test set has no valid reviewed cases.")
             raise ValueError("Golden test set is empty.")
 
         logger.info(
@@ -236,10 +276,12 @@ class EvalRunner:
             qr = self._evaluate_single(
                 tc, top_k=top_k, collection=collection,
                 answer_override=answer_override,
+                retrieval_only=retrieval_only,
+                strict_retrieval=strict_retrieval,
             )
             report.query_results.append(qr)
 
-        report.total_elapsed_ms = (time.monotonic() - t0) * 1000.0
+        report.total_elapsed_ms = max((time.monotonic() - t0) * 1000.0, 0.001)
         report.aggregate_metrics = self._aggregate_metrics(report.query_results)
 
         logger.info(
@@ -256,6 +298,8 @@ class EvalRunner:
         top_k: int = 10,
         collection: Optional[str] = None,
         answer_override: Optional[str] = None,
+        retrieval_only: bool = False,
+        strict_retrieval: bool = False,
     ) -> QueryResult:
         """Evaluate a single test case.
 
@@ -270,16 +314,26 @@ class EvalRunner:
             QueryResult with metrics for this test case.
         """
         t0 = time.monotonic()
-        qr = QueryResult(query=test_case.query)
+        qr = QueryResult(
+            query=test_case.query,
+            case_id=test_case.id,
+            expected_chunk_ids=list(test_case.expected_chunk_ids),
+            category=test_case.category,
+            difficulty=test_case.difficulty,
+        )
 
         # Step 1: Retrieve chunks
-        retrieved_chunks = self._retrieve(test_case.query, top_k, collection)
+        retrieved_chunks = self._retrieve(
+            test_case.query, top_k, collection, strict=strict_retrieval
+        )
         qr.retrieved_chunk_ids = [
             self._get_chunk_id(c) for c in retrieved_chunks
         ]
 
         # Step 2: Generate answer — prefer user override, then generator, then fallback
-        if answer_override:
+        if retrieval_only:
+            answer = None
+        elif answer_override:
             answer = answer_override
         else:
             answer = self._generate_answer(test_case.query, retrieved_chunks)
@@ -294,11 +348,16 @@ class EvalRunner:
 
         # Step 4: Evaluate
         try:
+            evaluate_kwargs = {
+                "query": test_case.query,
+                "retrieved_chunks": retrieved_chunks,
+                "generated_answer": answer,
+                "ground_truth": ground_truth,
+            }
+            if retrieval_only:
+                evaluate_kwargs["allow_empty_retrieval"] = True
             metrics = self.evaluator.evaluate(  # type: ignore[union-attr]
-                query=test_case.query,
-                retrieved_chunks=retrieved_chunks,
-                generated_answer=answer,
-                ground_truth=ground_truth,
+                **evaluate_kwargs,
             )
             qr.metrics = metrics
         except Exception as exc:
@@ -313,12 +372,15 @@ class EvalRunner:
         query: str,
         top_k: int,
         collection: Optional[str],
+        strict: bool = False,
     ) -> List[Any]:
         """Retrieve chunks using HybridSearch + optional Reranking.
 
         Falls back to an empty list if search is not configured.
         """
         if self.hybrid_search is None:
+            if strict:
+                raise RuntimeError("No HybridSearch configured for retrieval evaluation")
             logger.warning("No HybridSearch configured; returning empty results.")
             return []
 
@@ -340,6 +402,8 @@ class EvalRunner:
 
             return results
         except Exception as exc:
+            if strict:
+                raise RuntimeError(f"Retrieval failed for '{query[:40]}': {exc}") from exc
             logger.warning("Retrieval failed for '%s': %s", query[:40], exc)
             return []
 

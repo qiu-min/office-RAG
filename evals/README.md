@@ -38,4 +38,28 @@ AI 只能生成 candidate，所有自动生成的 case 初始状态必须是 `pe
 
 ## 后续用途
 
-后续 PR 可以基于该 Golden Set 做 Retrieval Evaluation，例如 HitRate@K、MRR 和 Recall@K；也可以做 Generation Evaluation，例如 Faithfulness、Answer Relevancy 和 Context Precision。本 PR 只建立数据资产、追溯关系和校验工具，不实现这些指标、Ragas 改造或 CI Quality Gate。
+此前的数据资产 PR 已为后续 Retrieval Evaluation 和 Generation Evaluation 保留了
+`expected_chunk_ids`、`reference_answer` 和 `evidence` 等字段；本 PR2 的检索基线说明见下节。
+
+## Retrieval Baseline（PR2）
+
+PR2 使用 Business Golden Set 中 `review_status == "reviewed"` 的 cases，调用生产环境的
+HybridSearch 以及 settings 中启用的 optional Reranker，只评估检索结果，不生成答案。
+
+运行命令：
+
+```bash
+python scripts/evaluate_retrieval.py \
+  --test-set evals/datasets/business_golden_v1.json \
+  --collection ubuntu_ops_filtered \
+  --top-k 10 \
+  --output evals/reports/retrieval_baseline_v1.json
+```
+
+Baseline 计算 `HitRate@K`、`Recall@K` 和 `MRR`，默认 K 为 1、3、5、10，并将每个 case
+的 expected/retrieved chunk IDs 保存到 `evals/reports/retrieval_baseline_v1.json`。该文件是
+后续修改 chunking、embedding、BM25、RRF 或 reranker 前的基准成绩；修改这些检索策略后，
+应使用相同 Golden Set 重新运行并进行对比。
+
+PR2 不包含 Generation Evaluation，不使用 `reference_answer` / `evidence` 评分，不调用
+Ragas，也不会根据 baseline 分数自动调优检索系统。

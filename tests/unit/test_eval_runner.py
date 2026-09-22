@@ -11,6 +11,7 @@ from unittest.mock import MagicMock
 import pytest
 
 from src.libs.evaluator.base_evaluator import BaseEvaluator
+from src.libs.evaluator.custom_evaluator import CustomEvaluator
 from src.observability.evaluation.eval_runner import (
     EvalRunner,
     EvalReport,
@@ -178,6 +179,88 @@ class TestEvalRunner:
         assert "query_results" in d
         assert d["query_count"] == 1
         assert d["evaluator_name"] == "StubEvaluator"
+
+    def test_retrieval_only_skips_answer_generator_and_preserves_case_fields(
+        self, tmp_path: Path
+    ) -> None:
+        f = tmp_path / "g.json"
+        _write_golden_json(f, [{
+            "id": "biz_001",
+            "query": "Q",
+            "expected_chunk_ids": ["c1"],
+            "category": "feature",
+            "difficulty": "easy",
+        }])
+
+        answer_generator = MagicMock(side_effect=AssertionError("must not generate"))
+        mock_search = MagicMock()
+        mock_search.search.return_value = [MagicMock(chunk_id="c1")]
+        runner = EvalRunner(
+            hybrid_search=mock_search,
+            evaluator=StubEvaluator(),
+            answer_generator=answer_generator,
+        )
+
+        result = runner.run(f, retrieval_only=True)
+
+        qr = result.query_results[0]
+        assert qr.case_id == "biz_001"
+        assert qr.expected_chunk_ids == ["c1"]
+        assert qr.category == "feature"
+        assert qr.difficulty == "easy"
+        assert qr.generated_answer is None
+        answer_generator.assert_not_called()
+
+    def test_reviewed_only_skips_pending_and_unresolved(self, tmp_path: Path) -> None:
+        f = tmp_path / "g.json"
+        _write_golden_json(f, [
+            {"id": "reviewed", "query": "reviewed", "review_status": "reviewed"},
+            {"id": "pending", "query": "pending", "review_status": "pending"},
+            {"id": "unresolved", "query": "unresolved", "review_status": "unresolved"},
+        ])
+
+        runner = EvalRunner(evaluator=StubEvaluator())
+        result = runner.run(f, retrieval_only=True, reviewed_only=True)
+
+        assert [qr.case_id for qr in result.query_results] == ["reviewed"]
+
+    def test_reviewed_only_keeps_legacy_cases_without_review_status(self, tmp_path: Path) -> None:
+        f = tmp_path / "legacy.json"
+        _write_golden_json(f, [{"query": "legacy"}])
+
+        runner = EvalRunner(evaluator=StubEvaluator())
+        result = runner.run(f, retrieval_only=True, reviewed_only=True)
+
+        assert len(result.query_results) == 1
+        assert result.query_results[0].case_id is None
+
+    def test_retrieval_only_searches_once_for_all_metric_prefixes(self, tmp_path: Path) -> None:
+        f = tmp_path / "g.json"
+        _write_golden_json(f, [{"query": "Q", "expected_chunk_ids": ["c1"]}])
+        mock_search = MagicMock()
+        mock_search.search.return_value = [MagicMock(chunk_id="c1")]
+
+        runner = EvalRunner(hybrid_search=mock_search, evaluator=StubEvaluator())
+        runner.run(f, top_k=10, retrieval_only=True)
+
+        mock_search.search.assert_called_once_with(query="Q", top_k=10)
+
+    def test_retrieval_only_scores_a_legitimate_empty_result_as_zero(self, tmp_path: Path) -> None:
+        f = tmp_path / "g.json"
+        _write_golden_json(f, [{"query": "Q", "expected_chunk_ids": ["c1"]}])
+        mock_search = MagicMock()
+        mock_search.search.return_value = []
+        evaluator = CustomEvaluator(metrics=["hit_rate@1", "recall@1", "mrr"])
+
+        runner = EvalRunner(hybrid_search=mock_search, evaluator=evaluator)
+        result = runner.run(f, retrieval_only=True, strict_retrieval=True)
+
+        assert result.query_results[0].retrieved_chunk_ids == []
+        assert result.query_results[0].metrics == {
+            "hit_rate@1": 0.0,
+            "recall@1": 0.0,
+            "mrr": 0.0,
+        }
 
 
 class TestEvalRunnerAggregation:

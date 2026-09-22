@@ -148,6 +148,35 @@ class TestCustomEvaluatorBoundary:
         metrics = evaluator.evaluate("q", retrieved, ground_truth=["gt1", "gt2"])
         assert metrics["mrr"] == 0.5  # gt1 at position 2 → 1/2
 
+    def test_ranked_hit_rate_and_recall_metrics(self) -> None:
+        evaluator = CustomEvaluator(
+            metrics=["hit_rate@1", "hit_rate@3", "recall@1", "recall@3", "mrr"]
+        )
+        retrieved = [{"id": "x"}, {"id": "a"}, {"id": "a"}]
+        metrics = evaluator.evaluate(
+            "q", retrieved, ground_truth=["a", "b"]
+        )
+
+        assert metrics["hit_rate@1"] == 0.0
+        assert metrics["hit_rate@3"] == 1.0
+        assert metrics["recall@1"] == 0.0
+        assert metrics["recall@3"] == 0.5
+        assert metrics["mrr"] == pytest.approx(0.5)
+
+    def test_recall_empty_ground_truth_is_zero(self) -> None:
+        evaluator = CustomEvaluator(metrics=["recall@5"])
+        assert evaluator.evaluate("q", [{"id": "a"}], ground_truth=[])["recall@5"] == 0.0
+
+    def test_dynamic_ranked_metrics_and_invalid_metrics(self) -> None:
+        evaluator = CustomEvaluator(metrics=["hit_rate@20", "recall@20"])
+        metrics = evaluator.evaluate("q", [{"id": "target"}], ground_truth=["target"])
+        assert metrics == {"hit_rate@20": 1.0, "recall@20": 1.0}
+
+        with pytest.raises(ValueError):
+            CustomEvaluator(metrics=["hit_rate@0"])
+        with pytest.raises(ValueError):
+            CustomEvaluator(metrics=["recall"])
+
     def test_none_evaluator_returns_empty_dict(self) -> None:
         """NoneEvaluator should return empty metrics dict."""
         evaluator = NoneEvaluator()
