@@ -3,6 +3,11 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+ops_kb/
+data/
+learning-notes/
+.agents/
+
 # C extensions
 *.so
 
